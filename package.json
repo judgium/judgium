@@ -24,7 +24,7 @@
     "seed": "node scripts/seed.js",
     "promote": "node scripts/promote.js",
     "backup": "node scripts/backup.js",
-    "test": "node --test --import ./test/setup.mjs \"test/*.test.js\""
+    "test": "node --test --import ./test/setup.mjs test/*.test.js"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
