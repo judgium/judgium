@@ -71,6 +71,21 @@ jobs:
           grep -q 'NOT LICENSED UNDER THE GNU AFFERO' docs/brand/LICENSE-BRAND \
             || { echo '::error file=docs/brand/LICENSE-BRAND::the brand-asset exclusion has been weakened'; exit 1; }
 
+      # The served icons are excluded from AGPL-3.0 by directory, so the
+      # directory has to exist and the pages have to point at it - a fork that
+      # rebrands replaces these rather than deleting them.
+      - name: Served brand assets are present and referenced
+        run: |
+          for f in public/brand/icon-32.png public/brand/icon-192.png \
+                   public/brand/apple-touch-icon.png docs/brand/logo/judgium-mark.png; do
+            [ -f "$f" ] || { echo "::error file=$f::$f is missing"; exit 1; }
+          done
+          for f in public/index.html public/admin.html public/judge.html \
+                   public/board.html public/sysadmin.html public/404.html; do
+            grep -q '/brand/icon-32.png' "$f" \
+              || { echo "::error file=$f::the page does not reference the brand icon"; exit 1; }
+          done
+
       # AGPL-3.0 section 13 requires that a user interacting with the program
       # over a network be offered its corresponding source. For a web app that
       # means a link in the interface, so its absence is a licence violation and

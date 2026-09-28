@@ -512,7 +512,7 @@ ours.
 | A published fork still called Judgium | ❌ [rename it](TRADEMARKS.md#4-forks-must-be-renamed) |
 | The logo on your own service or fork | ❌ [§ 3(b)](TRADEMARKS.md#3-uses-that-require-our-written-permission) |
 
-`docs/brand/` and `public/favicon.svg` are **excluded from AGPL-3.0** — see
+`docs/brand/` and `public/brand/` are **excluded from AGPL-3.0** — see
 [`docs/brand/LICENSE-BRAND`](docs/brand/LICENSE-BRAND). Everything else in this
 repository is AGPL-3.0.
 

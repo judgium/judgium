@@ -2,11 +2,11 @@
    No build step: plain CSS custom properties, light + dark, mobile first. */
 
 :root {
-  --accent: #7c4fc2;
-  --accent-strong: #653fa6;
-  --accent-deep: #4e2f82;
-  --accent-soft: #f1ecfb;
-  --accent-ring: rgba(124, 79, 194, 0.28);
+  --accent: #2766bc;
+  --accent-strong: #245495;
+  --accent-deep: #1a4074;
+  --accent-soft: #e9f2fe;
+  --accent-ring: rgba(39, 102, 188, 0.28);
 
   --bg: #f6f8f9;
   --surface: #ffffff;
@@ -39,11 +39,11 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --accent: #a98be6;
-    --accent-strong: #c0a8f0;
-    --accent-deep: #6d4cb8;
-    --accent-soft: #241c3a;
-    --accent-ring: rgba(169, 139, 230, 0.32);
+    --accent: #5c9df4;
+    --accent-strong: #86b7fa;
+    --accent-deep: #2d63ad;
+    --accent-soft: #17283f;
+    --accent-ring: rgba(92, 157, 244, 0.32);
 
     --bg: #0e1518;
     --surface: #151f24;
@@ -119,6 +119,14 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 1.25rem 0; }
   letter-spacing: -0.02em;
 }
 .topbar__brand:hover { text-decoration: none; }
+/* The mark sits next to the service name, so it carries alt="" and is
+   decorative to a screen reader - the name is already there as text. */
+.topbar__logo {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 6px;
+}
 .topbar__spacer { flex: 1 1 auto; }
 .topbar__meta { color: var(--text-muted); font-size: 0.85rem; }
 
@@ -194,7 +202,7 @@ a.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .btn--primary { --btn-bg: var(--accent); --btn-fg: #fff; --btn-border: var(--accent); }
 .btn--primary:hover:not(:disabled) { --btn-bg: var(--accent-strong); --btn-border: var(--accent-strong); }
-@media (prefers-color-scheme: dark) { .btn--primary { --btn-fg: #1b1030; } }
+@media (prefers-color-scheme: dark) { .btn--primary { --btn-fg: #0a1d36; } }
 
 .btn--ghost { --btn-bg: transparent; --btn-border: transparent; --btn-fg: var(--accent-strong); }
 .btn--outline { --btn-bg: transparent; --btn-fg: var(--accent-strong); --btn-border: var(--accent); }
@@ -278,7 +286,7 @@ input::placeholder, textarea::placeholder { color: var(--text-faint); }
 .badge--warn { background: var(--warn-soft); color: var(--warn); }
 .badge--danger { background: var(--danger-soft); color: var(--danger); }
 @media (prefers-color-scheme: dark) {
-  .badge { color: #f3edff; }
+  .badge { color: #eef5fe; }
   .badge--soft { color: var(--accent-strong); }
 }
 
@@ -298,7 +306,7 @@ input::placeholder, textarea::placeholder { color: var(--text-faint); }
 .chip:hover { border-color: var(--accent); }
 .chip[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
 .chip--done { border-color: var(--accent); color: var(--accent-strong); }
-@media (prefers-color-scheme: dark) { .chip[aria-selected="true"] { color: #1b1030; } }
+@media (prefers-color-scheme: dark) { .chip[aria-selected="true"] { color: #0a1d36; } }
 
 /* --- tabs -------------------------------------------------------------- */
 

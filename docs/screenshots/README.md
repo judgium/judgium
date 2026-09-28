@@ -34,20 +34,50 @@ Not blocking anything, but each would earn its place:
 
 ## How
 
-1. `npm run seed && npm start`. Seeding gives twelve entries and five judges
-   with realistic names, so the screens are not full of empty states.
-2. Score a few entries from two or three of the judge links it prints, so the
-   board has real ranks and at least one tie.
-3. Capture at 2× DPI in light theme. The existing files are 3840 × 1928, which
-   is 1920 × 964 at 2×; matching that keeps the set consistent.
-4. Optimise losslessly (`oxipng -o4`, or `pngquant --quality=80-95` if you
-   accept a lossy step). The current files are 430–630 KB each at 2× full width.
-   Anything under roughly 700 KB is fine; if a capture comes out much larger
-   than its neighbours, it has not been optimised.
+Captured headlessly, so the set stays consistent and anyone can reproduce it.
+Playwright is deliberately **not** a dependency of this project — install it
+outside the repo and run it from there, so `package.json` keeps its two runtime
+and one dev dependency.
+
+```bash
+npm run seed && npm start            # demo data, then leave it running
+
+mkdir -p /tmp/pw && cd /tmp/pw       # anywhere outside the repo
+npm init -y && npm install playwright
+npx playwright install chromium
+```
+
+Then a script in `/tmp/pw` that, for each surface:
+
+- opens a context at **1920 × 964, deviceScaleFactor 2** (the files are
+  3840 × 1928; match it or the set stops looking like one thing)
+- signs in as `organizer@example.com` / `demo-password-1234` for `/admin`
+- goes to `/admin/c/<competition-id>/<tab>` directly, where the tab is one of
+  `setup rubric entries judges results`
+- scrolls the section card to the top before shooting the rubric, judges and
+  results tabs, so the whole panel fits in one frame; `entries` is shot from the
+  top of the page, header and tabs included
+- shoots `/j/<token>` and `/board/<slug>` from a second, anonymous context
+
+`/sysadmin` needs the platform role. Rather than using a real administrator
+account, promote the demo organizer for the capture and revoke it afterwards —
+the screenshot then reads *Signed in as Demo Organizer* instead of a real name:
+
+```bash
+npm run promote -- organizer@example.com
+# capture
+npm run promote -- organizer@example.com --revoke
+```
+
+Headless capture lands at **204–422 KB** per file, about 1.9 MB for the set, with
+no optimiser run over it. If a capture comes out much heavier than that, it was
+probably taken as a window screenshot rather than headlessly.
 
 Update **both** `README.md` and `README-ja.md` when you add or replace an image —
-each embeds the same files with its own caption, and the alt text is
-translated too.
+each embeds the same files with its own caption, and the alt text is translated
+too. Several captions cite specific numbers visible in the image (the rubric
+weights summing to 60, sponsor judges at 5/9 and 4/7, rank 4 at five of five
+judges); if a recapture changes what is in frame, fix the caption with it.
 
 ## Before committing
 

@@ -36,6 +36,10 @@ that says so at the top of its entry.
   running a modified build **must** set `SOURCE_URL` to their own source — the
   licence requires that the link reach the code actually running, not ours.
 
+- The Judgium mark, as a blue disc with a white **J**, applied as the favicon,
+  the Apple touch icon and a logo in every page header. Served from
+  `public/brand/`, which — like `docs/brand/` — is excluded from AGPL-3.0.
+
 ### Changed
 
 - **Licence: MIT → [AGPL-3.0-only](LICENSE).** Judgium is a network application,
@@ -44,6 +48,20 @@ that says so at the top of its entry.
   not. Self-hosting, modification and commercial use are unchanged and need no
   permission. `package.json` `license` is now `AGPL-3.0-only`, without the
   "or any later version" clause.
+- **Interface palette moved from purple to the blue of the mark.** All ten
+  accent tokens in `public/css/app.css`, both themes. The interface sits a shade
+  deeper than the mark on purpose: white text on the mark's own `#2882fc` is
+  3.69:1, under the 4.5:1 WCAG AA asks for, so the palette keeps the hue and
+  drops the lightness. Every one of the twelve foreground/background pairs that
+  actually occurs was measured; the lowest is now 5.47:1, and ten of the twelve
+  match or beat what purple achieved.
+- Screenshots recaptured against the blue interface, headlessly rather than as
+  window screenshots — the set is consistent, reproducible from a documented
+  script, and 1.9 MB instead of 3.2 MB.
+- `public/favicon.svg` removed; the AGPL-3.0 carve-out now names the
+  `public/brand/` directory instead of a single filename, in `NOTICE`,
+  `docs/brand/LICENSE-BRAND`, `TRADEMARKS.md` and both READMEs, so adding an
+  icon no longer means editing three legal documents.
 - Copyright holder recorded as Taiji Hagino.
 - `README.md` — licence and trademark sections, a documentation index and the
   source-link requirement for operators.

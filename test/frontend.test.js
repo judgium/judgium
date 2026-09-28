@@ -362,7 +362,7 @@ test('the landing page carries the service name, catchphrase and description', a
     await waitFor(() => page.document.querySelector('.hero__tagline'), { label: 'catchphrase' });
 
     assert.equal(page.document.title, 'Judgium');
-    assert.equal(page.document.querySelector('.topbar__brand').textContent, 'Judgium');
+    assert.equal(page.document.querySelector('.topbar__brand').textContent.trim(), 'Judgium');
     assert.equal(
       page.document.querySelector('.hero__tagline').textContent,
       '挑戦を、正しく届ける、作品と評価が出会う場所。',

@@ -91,7 +91,7 @@ wording that a reasonable visitor would read as run by us. If you host Judgium
 for other people, the service needs your own name.
 
 **b. Any use of the logo or wordmark.** Our mark files — including
-`public/favicon.svg` and everything under `docs/brand/` — are not covered by
+everything under `public/brand/` and `docs/brand/` — are not covered by
 AGPL-3.0. See § 4 of [`docs/brand/BRAND.md`](docs/brand/BRAND.md) for the one
 narrow exception (an unmodified build).
 
@@ -134,7 +134,7 @@ A fork you publish, redistribute or host for others **must carry its own name.**
 | `package.json` | `name`, `description` |
 | `public/i18n/*.json` | `app.name`, `app.tagline`, `app.description` (all five locales) |
 | `public/*.html` | `<title>`, `<meta name="description">`, the `topbar__brand` text |
-| `public/favicon.svg` | replace with your own mark |
+| `public/brand/` | replace every icon with your own mark |
 | `docs/brand/` | **delete the directory** — those assets are not yours to ship |
 | `NOTICE`, `README.md` | keep our copyright line; add your own; state that you are not us |
 | default DB filename | `judgium.db` → your own (cosmetic, but it shows up in ops docs) |

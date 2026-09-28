@@ -500,7 +500,7 @@ AGPL-3.0 § 7(e) は、コードを与えつつ商標を留保できるように
 | 公開したフォークを Judgium と名乗る | ❌ [改名が必要](TRADEMARKS.md#4-forks-must-be-renamed) |
 | 自分のサービスやフォークにロゴを使う | ❌ [§ 3(b)](TRADEMARKS.md#3-uses-that-require-our-written-permission) |
 
-`docs/brand/` と `public/favicon.svg` は **AGPL-3.0 の対象外**です —
+`docs/brand/` と `public/brand/` は **AGPL-3.0 の対象外**です —
 [`docs/brand/LICENSE-BRAND`](docs/brand/LICENSE-BRAND) を参照してください。
 このリポジトリのそれ以外はすべて AGPL-3.0 です。
 

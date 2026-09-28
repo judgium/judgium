@@ -4,7 +4,7 @@ JUDGIUM BRAND ASSETS - LICENCE
 Copyright (C) 2025-2026 Taiji Hagino. All rights reserved.
 
 This directory (docs/brand/, including BRAND.md and every file under logo/) and
-the file public/favicon.svg contain the trademarks and brand assets of Judgium.
+the directory public/brand/ contain the trademarks and brand assets of Judgium.
 
 THESE FILES ARE NOT LICENSED UNDER THE GNU AFFERO GENERAL PUBLIC LICENSE.
 
@@ -35,7 +35,7 @@ as the identity of another product, service, organisation or deployment; any
 modification of the mark files; merchandise; and incorporation into another
 logo, badge or composite.
 
-A redistributed fork must delete this directory and replace public/favicon.svg.
+A redistributed fork must delete this directory and replace public/brand/.
 See TRADEMARKS.md in the repository root for the full policy and for how to
 request permission.
 
