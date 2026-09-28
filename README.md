@@ -57,12 +57,6 @@ every page.
 
 ### Setting up
 
-**Entries.** Twelve projects with team, track and table number. Paste a
-`Project | Team | Track | Table` list to add a whole cohort; unknown tracks are
-created as they appear.
-
-![Organizer console, Entries tab](docs/screenshots/admin-entries.png)
-
 **Rubric.** A maximum and a weight per criterion. This is the
 25/20/20/15/10/10 rubric that scores out of 100 in weighted mode and out of 60
 in points mode — both numbers are stored, so the mode can be switched without
@@ -78,13 +72,37 @@ denominators are 9 and 7 against everyone else's 12.
 
 ![Organizer console, Judges tab](docs/screenshots/admin-judges.png)
 
+### Collecting submissions
+
+**Opening the window.** One checkbox, and the submission link appears beside
+the board link. The help text is the important part: turning it off *is* the
+deadline, and it stops adding, editing and withdrawing at the same moment.
+
+![Organizer console, Participant submissions card](docs/screenshots/admin-submissions.png)
+
+**What an entrant sees** at `/enter/<slug>` after creating an account there.
+Their own submissions and nobody else's, each with the repository and demo
+links a judge will open, and **Add a submission** still available underneath —
+one account may enter as many projects as it likes.
+
+![Participant submission page](docs/screenshots/enter-submissions.png)
+
+**What arrived.** The organizer's Entries tab, where submissions and
+hand-entered rows sit together: Aurora and EchoNotes came through the
+submission page and say who sent them, the other ten were entered by the
+organizer and show no submitter.
+
+![Organizer console, Entries tab](docs/screenshots/admin-entries.png)
+
 ### During the demos
 
 **Judge scorecard** — what a judge opens from their link. No account, no
 install, and nothing here reveals the other judges. Entry chips across the top
 mark what has been scored, one entry is open below with a field per criterion
 and the criterion's own guidance text, and prev/next moves through the list.
-This card has been submitted, so it offers **Reopen my scorecard** rather than
+This is one of the participant-submitted entries, so it carries a description
+and both links: enough to judge from a recording rather than a live pitch. The
+card has been submitted, so it offers **Reopen my scorecard** rather than
 **Mark as complete**.
 
 ![Judge scorecard](docs/screenshots/judge-scorecard.png)

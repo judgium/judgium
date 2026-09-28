@@ -5,15 +5,17 @@ demo data `npm run seed` builds, so nothing in them is real.
 
 ## What is here
 
-The set is complete. `README.md` and `README-ja.md` embed all seven in the order
+The set is complete. `README.md` and `README-ja.md` embed all nine in the order
 an event runs, not in the order below.
 
 | File | Page | Shows |
 |---|---|---|
-| `admin-entries.png` | `/admin` → Entries | 12 projects with team, track and table |
 | `admin-rubric.png` | `/admin` → Rubric | Weighted mode, 25/20/20/15/10/10 |
 | `admin-judges.png` | `/admin` → Judges | Private links, progress, rotate/reopen/clear |
-| `judge-scorecard.png` | `/j/<token>` | A submitted card: entry chips, per-criterion fields, prev/next |
+| `admin-submissions.png` | `/admin` → Setup | The submission window and the `/enter/<slug>` link |
+| `enter-submissions.png` | `/enter/<slug>` | A participant's own submissions, with repo and demo links |
+| `admin-entries.png` | `/admin` → Entries | 12 entries; two name a submitter, ten do not |
+| `judge-scorecard.png` | `/j/<token>` | A submitted card with the description and both URLs |
 | `board.png` | `/board/<slug>` | Ranked board with track filter, live indicator, full-screen |
 | `admin-results.png` | `/admin` → Results | Live ranking with `judgesScored / judgesEligible` |
 | `sysadmin-overview.png` | `/sysadmin` → Overview | Counters and the storage/durability panel |
@@ -29,8 +31,8 @@ Not blocking anything, but each would earn its place:
   apart, which is close but does not show tie handling — tied entries share a
   rank and the next rank skips. Scoring two entries identically would
   demonstrate it.
-- **`judge-scorecard-partial.png`** — a card mid-scoring, with **Mark as
-  complete** rather than **Reopen my scorecard**, and the feedback box in frame.
+- **`enter-closed.png`** — the submission page after the deadline, which is
+  read-only and says so.
 
 ## How
 
@@ -54,6 +56,11 @@ Then a script in `/tmp/pw` that, for each surface:
 - appends `?lang=en` to every URL, so the whole set is one language regardless
   of what the browser would negotiate
 - signs in as `organizer@example.com` / `demo-password-1234` for `/admin`
+- signs in as `entrant@example.com` / `entrant-password-1234` for
+  `/enter/<slug>`, in a second context so the two sessions do not collide.
+  `npm run seed` creates that participant, opens the submission window, and
+  attributes two of the twelve entries to them, so every frame here is
+  reproducible without hand-editing the database
 - goes to `/admin/c/<competition-id>/<tab>` directly, where the tab is one of
   `setup rubric entries judges results`
 - scrolls the section card to the top before shooting the rubric, judges and
@@ -70,6 +77,9 @@ npm run promote -- organizer@example.com
 # capture
 npm run promote -- organizer@example.com --revoke
 ```
+
+The Setup tab is long, so `admin-submissions.png` scrolls to the
+**Participant submissions** card the same way the rubric and judges frames do.
 
 Headless capture lands at **204–351 KB** per file, about 1.8 MB for the set, with
 no optimiser run over it. If a capture comes out much heavier than that, it was

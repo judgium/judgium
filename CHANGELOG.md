@@ -12,6 +12,16 @@ that says so at the top of its entry.
 ## [Unreleased]
 
 ### Added
+- Screenshots of the submission surface: the organizer's submission-window card
+  and what an entrant sees at `/enter/<slug>`, both embedded in the READMEs.
+  The whole set was recaptured so it comes from one consistent seed, and the
+  Screens section now follows an event through submission as well as judging.
+- `npm run seed` creates a participant account, opens the submission window, and
+  attributes two of its twelve entries to that participant with a repository and
+  a recorded-demo URL. The entry count is unchanged, so a fresh seed
+  demonstrates asynchronous judging and the mixed organizer/entrant case without
+  anything having to be set up by hand. It prints the submission link and the
+  participant's credentials alongside the judge links.
 
 - **Participant self-submission.** A sixth surface at `/enter/<slug>`, reached
   through a link the organizer shares rather than any public list of

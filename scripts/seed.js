@@ -17,6 +17,26 @@ const DEMO_EMAIL = 'organizer@example.com';
 const DEMO_PASSWORD = 'demo-password-1234';
 const COMPETITION_NAME = 'Spring Hackathon 2026';
 
+// A participant account, so the submission surface has something in it out of
+// the box. Two of the twelve entries below are attributed to them and carry a
+// repository and a recorded demo, which is what asynchronous judging looks
+// like; the other ten read as organizer-entered. The total stays twelve.
+const PARTICIPANT_EMAIL = 'entrant@example.com';
+const PARTICIPANT_PASSWORD = 'entrant-password-1234';
+const PARTICIPANT_NAME = 'Mika Sato';
+const PARTICIPANT_ENTRIES = {
+  Aurora: {
+    projectUrl: 'https://github.com/example/aurora',
+    videoUrl: 'https://video.example/aurora-demo',
+    description: 'Aurora forecasts grid load from public weather feeds. Three-minute recorded demo; the repository has the model and the API.',
+  },
+  EchoNotes: {
+    projectUrl: 'https://github.com/example/echonotes',
+    videoUrl: 'https://video.example/echonotes-demo',
+    description: 'EchoNotes turns a meeting recording into decisions and owners. Submitted for asynchronous review - no live pitch.',
+  },
+};
+
 const ENTRIES = [
   ['Aurora', 'Team Northern Lights', 'Best AI', 'T1'],
   ['BudgetBuddy', 'Fintech Four', 'Best Fintech', 'T2'],
@@ -63,6 +83,17 @@ function seedDatabase() {
       user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
     }
 
+    // The participant who submits two of the entries below.
+    let entrant = db.prepare('SELECT * FROM users WHERE email = ?').get(PARTICIPANT_EMAIL);
+    if (!entrant) {
+      const id = newId('u_');
+      db.prepare(
+        `INSERT INTO users (id, email, name, password_hash, locale, role, created_at)
+         VALUES (?, ?, ?, ?, 'en', 'participant', ?)`,
+      ).run(id, PARTICIPANT_EMAIL, PARTICIPANT_NAME, hashPassword(PARTICIPANT_PASSWORD), now());
+      entrant = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
+    }
+    
     // Replace any previous demo competition so re-running stays idempotent.
     db.prepare('DELETE FROM competitions WHERE owner_id = ? AND name = ?').run(user.id, COMPETITION_NAME);
 
@@ -71,8 +102,8 @@ function seedDatabase() {
     db.prepare(
       `INSERT INTO competitions (id, owner_id, name, description, public_slug, status, scoring_mode,
                                  aggregate, drop_high_low, public_board, show_scores_on_board,
-                                 allow_notes, allow_decimals, rev, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, 'live', 'points', 'avg', 0, 1, 1, 1, 1, 0, ?, ?)`,
+                                 allow_notes, allow_decimals, submissions_open, rev, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, 'live', 'points', 'avg', 0, 1, 1, 1, 1, 1, 0, ?, ?)`,
     ).run(
       competitionId,
       user.id,
@@ -113,11 +144,28 @@ function seedDatabase() {
     const entryRows = [];
     for (const [index, [name, team, track, table]] of ENTRIES.entries()) {
       const id = newId('e_');
+      // Two of the twelve came in through the submission page, so they carry a
+      // repository, a recorded demo and a submitter; the rest read as entered
+      // by the organizer.
+      const submitted = PARTICIPANT_ENTRIES[name];
       db.prepare(
         `INSERT INTO entries (id, competition_id, track_id, name, team_name, description, project_url,
-                              video_url, table_label, sort_order, created_at)
-         VALUES (?, ?, ?, ?, ?, '', '', '', ?, ?, ?)`,
-      ).run(id, competitionId, track ? trackIds.get(track) : null, name, team, table, index, now());
+                              video_url, table_label, submitted_by, sort_order, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ).run(
+        id,
+        competitionId,
+        track ? trackIds.get(track) : null,
+        name,
+        team,
+        submitted?.description ?? '',
+        submitted?.projectUrl ?? '',
+        submitted?.videoUrl ?? '',
+        table,
+        submitted ? entrant.id : null,
+        index,
+        now(),
+      );
       entryRows.push({ id, trackId: track ? trackIds.get(track) : null });
     }
 
@@ -183,6 +231,12 @@ console.log('  e-mail    ', DEMO_EMAIL);
 console.log('  password  ', DEMO_PASSWORD);
 console.log('\nPublic leaderboard');
 console.log('  ', `${base}/board/${slug}`);
+console.log('\nParticipant sign-in (the submission surface)');
+console.log('  URL       ', `${base}/enter/${slug}`);
+console.log('  e-mail    ', PARTICIPANT_EMAIL);
+console.log('  password  ', PARTICIPANT_PASSWORD);
+console.log('  submitted ', Object.keys(PARTICIPANT_ENTRIES).join(', '), '(of the twelve entries)');
+
 console.log('\nJudge links');
 for (const judge of judgeRows) {
   console.log(`   ${judge.name.padEnd(26)} ${base}/j/${judge.token}`);
