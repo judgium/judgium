@@ -51,6 +51,8 @@ Then a script in `/tmp/pw` that, for each surface:
 
 - opens a context at **1920 × 964, deviceScaleFactor 2** (the files are
   3840 × 1928; match it or the set stops looking like one thing)
+- appends `?lang=en` to every URL, so the whole set is one language regardless
+  of what the browser would negotiate
 - signs in as `organizer@example.com` / `demo-password-1234` for `/admin`
 - goes to `/admin/c/<competition-id>/<tab>` directly, where the tab is one of
   `setup rubric entries judges results`
@@ -69,7 +71,7 @@ npm run promote -- organizer@example.com
 npm run promote -- organizer@example.com --revoke
 ```
 
-Headless capture lands at **204–422 KB** per file, about 1.9 MB for the set, with
+Headless capture lands at **204–351 KB** per file, about 1.8 MB for the set, with
 no optimiser run over it. If a capture comes out much heavier than that, it was
 probably taken as a window screenshot rather than headlessly.
 

@@ -49,9 +49,9 @@ network needed).
 ## Screens
 
 All from the demo data `npm run seed` builds, so every name and score below is
-fictional. Shown in the order an event actually runs. The organizer console
-happens to be in Japanese and the rest in English — same build, the toggle is
-top right of every page.
+fictional, and shown in the order an event actually runs. The interface also
+ships in Japanese, Spanish, Chinese and Korean — the toggle is top right of
+every page.
 
 ### Setting up
 
