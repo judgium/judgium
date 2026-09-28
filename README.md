@@ -48,21 +48,50 @@ network needed).
 
 ## Screens
 
-Screenshots are not committed yet —
-[`docs/screenshots/README.md`](docs/screenshots/README.md) lists what to capture
-and what to redact, and is a good first contribution. What each surface shows in
-the meantime:
+All from the demo data `npm run seed` builds, so every name and score below is
+fictional. The organizer console happens to be shown in Japanese and the
+platform view in English — same build, the toggle is top right of every page.
 
-- **Organizer console** — tabs for rubric, entries, judges and results. The
-  rubric editor carries a maximum and a weight per criterion; the judges tab
-  issues, copies and rotates private links a panel at a time.
-- **Judge scorecard** — one entry, one numeric field per criterion, a feedback
-  box, prev/next. Scores save as they are typed. No account and no install.
-- **Public leaderboard** — rank, project, team, score and
-  `judgesScored / judgesEligible`, updating live over SSE, with a full-screen
-  button for the demo-room projector.
-- **Platform administration** — cross-tenant counters, account and competition
-  management, the storage/durability facts, and the append-only audit log.
+**Organizer console — Entries.** Twelve projects with team, track and table
+number. Paste a `Project | Team | Track | Table` list to add a whole cohort;
+unknown tracks are created as they appear.
+
+![Organizer console, Entries tab](docs/screenshots/admin-entries.png)
+
+**Organizer console — Rubric.** A maximum and a weight per criterion. This is
+the 25/20/20/15/10/10 rubric that produces a score out of 100 in weighted mode,
+and out of 60 in points mode — both are stored, so the mode can be switched
+without re-entering anything.
+
+![Organizer console, Rubric tab](docs/screenshots/admin-rubric.png)
+
+**Organizer console — Judges.** One private link per judge, copied
+individually or all at once. Each row shows progress, whether the link has been
+opened, and buttons to reopen a scorecard, rotate the link (retiring the old one
+instantly) or clear that judge's scores. The two sponsor judges are scoped to a
+track, so their denominators are 9 and 7 rather than 12.
+
+![Organizer console, Judges tab](docs/screenshots/admin-judges.png)
+
+**Organizer console — Results.** Live ranking with
+`judgesScored / judgesEligible` per row, a per-judge breakdown behind each link,
+and the four exports. Note rank 4 has five of five judges while rank 1 has three
+of four: partial scorecards count, and the board says so.
+
+![Organizer console, Results tab](docs/screenshots/admin-results.png)
+
+**Platform administration.** Cross-tenant counters, the storage and durability
+facts with a one-click backup, and — on their own tabs — accounts, competitions
+and the append-only audit log. `SESSION KEY: stored on disk` is the middle of
+the three cases described under *Data, durability and backups*.
+
+![Platform administration, Overview tab](docs/screenshots/sysadmin-overview.png)
+
+**Still to capture:** the judge scorecard (`/j/<token>`) and the public
+leaderboard (`/board/<slug>`) — the two surfaces that need no account, and the
+two a contributor can add most easily.
+[`docs/screenshots/README.md`](docs/screenshots/README.md) says how, and what to
+redact.
 
 ## Data, durability and backups
 
