@@ -641,3 +641,15 @@ trademarks of Taiji Hagino.
 Bugs and features: [issues](https://github.com/judgium/judgium/issues).
 Anything open-ended: [Discussions](https://github.com/judgium/judgium/discussions).
 Vulnerabilities: **not** an issue — [report privately](https://github.com/judgium/judgium/security/advisories/new).
+
+## Sponsoring
+
+Judgium is free software and stays that way. If it saved you an evening of
+spreadsheet wrangling and you feel like it, there is a tip jar:
+
+[![Buy me a coffee](https://img.shields.io/badge/Buy_me_a_coffee-5F7FFF?logo=buymeacoffee&logoColor=white)](https://www.buymeacoffee.com/taiponrock)
+
+Nothing here is behind it. Sponsoring buys no priority on issues, no influence
+over what gets merged, and no feature that other people do not get — see
+[`GOVERNANCE.md`](GOVERNANCE.md) for how decisions are actually made. It pays
+for coffee.

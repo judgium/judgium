@@ -622,3 +622,14 @@ Taiji Hagino の商標です。
 不具合と機能要望: [issues](https://github.com/judgium/judgium/issues)。
 自由な議論: [Discussions](https://github.com/judgium/judgium/discussions)。
 脆弱性: issue では**なく** — [非公開で報告](https://github.com/judgium/judgium/security/advisories/new)。
+
+## スポンサー
+
+Judgium はフリーソフトウェアで、これからもそうです。表計算との格闘を一晩分
+省けたと感じて、気が向いたときだけのチップ入れです。
+
+[![Buy me a coffee](https://img.shields.io/badge/Buy_me_a_coffee-5F7FFF?logo=buymeacoffee&logoColor=white)](https://www.buymeacoffee.com/taiponrock)
+
+この先に何かがあるわけではありません。スポンサーになっても Issue の優先対応も、
+マージ内容への影響も、他の人が得られない機能もありません。意思決定の実際は
+[`GOVERNANCE.md`](GOVERNANCE.md) にあります。コーヒー代です。
