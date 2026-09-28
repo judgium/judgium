@@ -74,20 +74,39 @@ denominators are 9 and 7 against everyone else's 12.
 
 ### Collecting submissions
 
-**Opening the window.** One checkbox, and the submission link appears beside
-the board link. The help text is the important part: turning it off *is* the
-deadline, and it stops adding, editing and withdrawing at the same moment.
+**Organizer — opening the window.** One checkbox, and the submission link
+appears beside the board link. The help text is the important part: turning it
+off *is* the deadline, and it stops adding, editing and withdrawing at the same
+moment.
 
 ![Organizer console, Participant submissions card](docs/screenshots/admin-submissions.png)
 
-**What an entrant sees** at `/enter/<slug>` after creating an account there.
-Their own submissions and nobody else's, each with the repository and demo
-links a judge will open, and **Add a submission** still available underneath —
+#### What an entrant sees at `/enter/<slug>`
+
+Three states, in the order an entrant meets them. This is the whole participant
+surface — there is no other page, and no competition list to browse.
+
+**1. Opening the link.** No account yet, so the page names the competition and
+asks for one. Creating an account is only possible while the window is open,
+which is what keeps accounts from being created against a competition whose
+organizer has not opened submissions.
+
+![Participant submission page, sign-in](docs/screenshots/enter-signin.png)
+
+**2. Submitting a project.** Name, team, track from the ones the organizer
+defined, the repository and recorded-demo URLs a judge will open, and a
+description. Not the table label — that is where an organizer seats a team in
+the demo room.
+
+![Participant submission page, the form](docs/screenshots/enter-form.png)
+
+**3. Coming back.** Their own submissions and nobody else's, each editable or
+withdrawable until the deadline, with **Add a submission** still underneath:
 one account may enter as many projects as it likes.
 
-![Participant submission page](docs/screenshots/enter-submissions.png)
+![Participant submission page, submissions listed](docs/screenshots/enter-submissions.png)
 
-**What arrived.** The organizer's Entries tab, where submissions and
+**Organizer — what arrived.** The Entries tab, where submissions and
 hand-entered rows sit together: Aurora and EchoNotes came through the
 submission page and say who sent them, the other ten were entered by the
 organizer and show no submitter.

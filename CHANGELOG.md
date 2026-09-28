@@ -12,6 +12,21 @@ that says so at the top of its entry.
 ## [Unreleased]
 
 ### Added
+- Two more frames of the participant surface, so all three of its states are
+  shown: opening the link (sign in or create an account) and the submission
+  form, alongside the list of submissions that was already there. The
+  `/enter/<slug>` frames now sit under their own heading in the READMEs, since
+  sandwiched between two organizer-console screenshots they read as more of the
+  same.
+
+### Fixed
+
+- **`hidden` had no effect on styled elements.** The sign-out button on the
+  submission page stayed visible to a signed-out visitor: the attribute was set,
+  but `.btn { display: inline-flex }` outranks the user agent's
+  `[hidden] { display: none }`, so the element rendered anyway. `app.css` now
+  carries an explicit `[hidden] { display: none !important }`. This was the only
+  place the codebase toggled `hidden`, so nothing else was affected.
 - Screenshots of the submission surface: the organizer's submission-window card
   and what an entrant sees at `/enter/<slug>`, both embedded in the READMEs.
   The whole set was recaptured so it comes from one consistent seed, and the

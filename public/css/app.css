@@ -1,5 +1,11 @@
-/* Judgium - single stylesheet for all four pages.
+/* Judgium - single stylesheet for every page.
    No build step: plain CSS custom properties, light + dark, mobile first. */
+
+/* The UA rule for [hidden] is display:none, but any author rule that sets
+   display on a class - .btn is inline-flex - outranks it, and the element
+   stays on screen with the attribute set. Anything toggled with el.hidden
+   needs this to actually disappear. */
+[hidden] { display: none !important; }
 
 :root {
   --accent: #2766bc;

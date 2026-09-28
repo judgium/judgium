@@ -5,15 +5,18 @@ demo data `npm run seed` builds, so nothing in them is real.
 
 ## What is here
 
-The set is complete. `README.md` and `README-ja.md` embed all nine in the order
-an event runs, not in the order below.
+The set is complete. `README.md` and `README-ja.md` embed all eleven in the
+order an event runs, not in the order below. The participant surface gets three
+frames because it has three states and an entrant meets all of them.
 
 | File | Page | Shows |
 |---|---|---|
 | `admin-rubric.png` | `/admin` → Rubric | Weighted mode, 25/20/20/15/10/10 |
 | `admin-judges.png` | `/admin` → Judges | Private links, progress, rotate/reopen/clear |
 | `admin-submissions.png` | `/admin` → Setup | The submission window and the `/enter/<slug>` link |
-| `enter-submissions.png` | `/enter/<slug>` | A participant's own submissions, with repo and demo links |
+| `enter-signin.png` | `/enter/<slug>` | What an entrant sees on opening the link: sign in or create an account |
+| `enter-form.png` | `/enter/<slug>` | The submission form: name, team, track, repo URL, demo URL, description |
+| `enter-submissions.png` | `/enter/<slug>` | A participant's own submissions, editable until the deadline |
 | `admin-entries.png` | `/admin` → Entries | 12 entries; two name a submitter, ten do not |
 | `judge-scorecard.png` | `/j/<token>` | A submitted card with the description and both URLs |
 | `board.png` | `/board/<slug>` | Ranked board with track filter, live indicator, full-screen |
@@ -32,7 +35,7 @@ Not blocking anything, but each would earn its place:
   rank and the next rank skips. Scoring two entries identically would
   demonstrate it.
 - **`enter-closed.png`** — the submission page after the deadline, which is
-  read-only and says so.
+  read-only and says so. Close the window (Setup tab) before capturing.
 
 ## How
 
