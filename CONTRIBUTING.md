@@ -81,6 +81,14 @@ The codebase has strong conventions. Match them rather than your own habits:
 
 `npm test` must pass. Node's built-in runner, no framework.
 
+`npm test` preloads `test/setup.mjs`, which lifts the per-IP rate limit for
+the run. The limiter is sized from the host CPU count, and the suite makes more
+writes than a two-core machine allows in a minute -- without the preload it
+trips its own limiter and fails whichever test was running when the budget ran
+out, reporting `rate_limited` against an unrelated assertion. Run
+`RATE_LIMIT_WRITE=600 node --test "test/*.test.js"` to reproduce that
+deliberately; the preload only assigns when the variable is unset.
+
 | Add a… | Test it in |
 |---|---|
 | Scoring or ranking change | `test/scoring.test.js` |
