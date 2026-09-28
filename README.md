@@ -49,36 +49,64 @@ network needed).
 ## Screens
 
 All from the demo data `npm run seed` builds, so every name and score below is
-fictional. The organizer console happens to be shown in Japanese and the
-platform view in English — same build, the toggle is top right of every page.
+fictional. Shown in the order an event actually runs. The organizer console
+happens to be in Japanese and the rest in English — same build, the toggle is
+top right of every page.
 
-**Organizer console — Entries.** Twelve projects with team, track and table
-number. Paste a `Project | Team | Track | Table` list to add a whole cohort;
-unknown tracks are created as they appear.
+### Setting up
+
+**Entries.** Twelve projects with team, track and table number. Paste a
+`Project | Team | Track | Table` list to add a whole cohort; unknown tracks are
+created as they appear.
 
 ![Organizer console, Entries tab](docs/screenshots/admin-entries.png)
 
-**Organizer console — Rubric.** A maximum and a weight per criterion. This is
-the 25/20/20/15/10/10 rubric that produces a score out of 100 in weighted mode,
-and out of 60 in points mode — both are stored, so the mode can be switched
-without re-entering anything.
+**Rubric.** A maximum and a weight per criterion. This is the
+25/20/20/15/10/10 rubric that scores out of 100 in weighted mode and out of 60
+in points mode — both numbers are stored, so the mode can be switched without
+re-entering anything.
 
 ![Organizer console, Rubric tab](docs/screenshots/admin-rubric.png)
 
-**Organizer console — Judges.** One private link per judge, copied
-individually or all at once. Each row shows progress, whether the link has been
-opened, and buttons to reopen a scorecard, rotate the link (retiring the old one
-instantly) or clear that judge's scores. The two sponsor judges are scoped to a
-track, so their denominators are 9 and 7 rather than 12.
+**Judges.** One private link per judge, copied individually or all at once.
+Each row shows progress, whether the link has been opened, and buttons to
+reopen a scorecard, rotate the link (retiring the old one instantly) or clear
+that judge's scores. The two sponsor judges are scoped to a track, so their
+denominators are 9 and 7 against everyone else's 12.
 
 ![Organizer console, Judges tab](docs/screenshots/admin-judges.png)
 
-**Organizer console — Results.** Live ranking with
+### During the demos
+
+**Judge scorecard** — what a judge opens from their link. No account, no
+install, and nothing here reveals the other judges. Entry chips across the top
+mark what has been scored, one entry is open below with a field per criterion
+and the criterion's own guidance text, and prev/next moves through the list.
+This card has been submitted, so it offers **Reopen my scorecard** rather than
+**Mark as complete**.
+
+![Judge scorecard](docs/screenshots/judge-scorecard.png)
+
+**Public leaderboard** — the demo-room screen. Rank, project, team, track and
+score, with a bar for relative position, a track filter, a live indicator and a
+full-screen button for the projector. Note what is *not* here: no judge names,
+no per-judge scores, no feedback notes. That is the guarantee in
+*Security notes*, and this is what it looks like. Ranks 3 and 4 sit 0.03 apart,
+which is the kind of margin that makes the per-judge export worth keeping.
+
+![Public leaderboard](docs/screenshots/board.png)
+
+### Announcing
+
+**Results.** The organizer's view of the same ranking, with
 `judgesScored / judgesEligible` per row, a per-judge breakdown behind each link,
-and the four exports. Note rank 4 has five of five judges while rank 1 has three
-of four: partial scorecards count, and the board says so.
+and the four exports. Rank 4 has five of five judges while rank 1 has three of
+four: partial scorecards count toward the live figure, and the row says so
+rather than hiding it.
 
 ![Organizer console, Results tab](docs/screenshots/admin-results.png)
+
+### Operating the deployment
 
 **Platform administration.** Cross-tenant counters, the storage and durability
 facts with a one-click backup, and — on their own tabs — accounts, competitions
@@ -86,12 +114,6 @@ and the append-only audit log. `SESSION KEY: stored on disk` is the middle of
 the three cases described under *Data, durability and backups*.
 
 ![Platform administration, Overview tab](docs/screenshots/sysadmin-overview.png)
-
-**Still to capture:** the judge scorecard (`/j/<token>`) and the public
-leaderboard (`/board/<slug>`) — the two surfaces that need no account, and the
-two a contributor can add most easily.
-[`docs/screenshots/README.md`](docs/screenshots/README.md) says how, and what to
-redact.
 
 ## Data, durability and backups
 

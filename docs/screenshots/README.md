@@ -5,26 +5,32 @@ demo data `npm run seed` builds, so nothing in them is real.
 
 ## What is here
 
+The set is complete. `README.md` and `README-ja.md` embed all seven in the order
+an event runs, not in the order below.
+
 | File | Page | Shows |
 |---|---|---|
 | `admin-entries.png` | `/admin` → Entries | 12 projects with team, track and table |
 | `admin-rubric.png` | `/admin` → Rubric | Weighted mode, 25/20/20/15/10/10 |
 | `admin-judges.png` | `/admin` → Judges | Private links, progress, rotate/reopen/clear |
+| `judge-scorecard.png` | `/j/<token>` | A submitted card: entry chips, per-criterion fields, prev/next |
+| `board.png` | `/board/<slug>` | Ranked board with track filter, live indicator, full-screen |
 | `admin-results.png` | `/admin` → Results | Live ranking with `judgesScored / judgesEligible` |
 | `sysadmin-overview.png` | `/sysadmin` → Overview | Counters and the storage/durability panel |
 
-## Still wanted
+## Nice to have
 
-The two surfaces that need no account, and so are the most distinctive things
-Judgium has — both are good first contributions:
+Not blocking anything, but each would earn its place:
 
-| File | Page | Should show |
-|---|---|---|
-| `judge-scorecard.png` | `/j/<token>` | One entry, a criterion part-filled, the feedback box, prev/next |
-| `board.png` | `/board/<slug>` | Top 8 with ranks, at least one tie, `judgesScored / judgesEligible` |
-
-A narrow capture of the judge scorecard as `judge-scorecard-mobile.png` is worth
-adding too — the interface is mobile-first and judges really do use phones.
+- **`judge-scorecard-mobile.png`** — the scorecard at phone width. The interface
+  is mobile-first and judges really do use phones, so this is the capture that
+  best contradicts the assumption that it is a desktop tool.
+- **A board with a genuine tie.** The current one has ranks 3 and 4 at 0.03
+  apart, which is close but does not show tie handling — tied entries share a
+  rank and the next rank skips. Scoring two entries identically would
+  demonstrate it.
+- **`judge-scorecard-partial.png`** — a card mid-scoring, with **Mark as
+  complete** rather than **Reopen my scorecard**, and the feedback box in frame.
 
 ## How
 

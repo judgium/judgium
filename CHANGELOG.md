@@ -23,9 +23,9 @@ that says so at the top of its entry.
   dependency list.
 - `README-ja.md` — Japanese README, with a language switcher at the top of both
   files. The five-locale interface always shipped; the documentation did not.
-- Screenshots of the organizer console (entries, rubric, judges, results) and
-  the platform view, embedded in both READMEs. The judge scorecard and the
-  public leaderboard are still to capture.
+- Screenshots of all five surfaces — the four organizer console tabs, the judge
+  scorecard, the public leaderboard and the platform view — embedded in both
+  READMEs in the order an event runs.
 - `CONTRIBUTING.md`, `GOVERNANCE.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`,
   `MAINTAINERS.md`, `DCO` — contribution workflow, decision-making, private
   vulnerability reporting and the Contributor Covenant.
