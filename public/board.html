@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="app.name">Judgium</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header class="topbar">
+    <span class="topbar__brand" data-i18n="app.name">Judgium</span>
+    <span class="topbar__spacer"></span>
+    <span class="row row--nowrap" id="livestate"></span>
+    <button class="btn btn--sm" id="fullscreen" data-i18n="action.fullscreen" type="button">Full screen</button>
+    <div id="langpick"></div>
+  </header>
+
+  <main class="shell shell--wide" id="main">
+    <p class="muted" id="boot" data-i18n="state.loading">Loading…</p>
+  </main>
+
+  <footer class="footer footer--compact">
+    <a class="footer__source" href="/source" rel="license" data-source-link data-i18n="app.source">Source code (AGPL-3.0)</a>
+  </footer>
+
+  <script type="module" src="/js/board.js"></script>
+</body>
+</html>

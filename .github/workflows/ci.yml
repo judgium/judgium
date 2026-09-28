@@ -1,0 +1,84 @@
+# Runs on every push and pull request. The deployment workflow
+# (azure-webapp.yml) runs its own test job before shipping, so this one exists
+# to gate contributions rather than releases.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 20.11 is the engines floor; 22 is what the deployment target runs.
+        node: ['20.11', '22']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      # better-sqlite3 ships a prebuilt binary per platform inside its tarball,
+      # and .npmrc sets ignore-scripts=true so npm does not run node-gyp just
+      # because the package contains a binding.gyp. No compiler is involved.
+      - run: npm ci
+      - run: npm test
+
+  licence-notices:
+    name: licence and trademark notices
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The trademark reservation only works if it travels with the code. These
+      # files going missing is the one licensing mistake that is invisible in a
+      # diff review, so it is asserted rather than trusted.
+      - name: Required files are present
+        run: |
+          missing=0
+          for f in LICENSE NOTICE DCO TRADEMARKS.md CODE_OF_CONDUCT.md \
+                   CONTRIBUTING.md GOVERNANCE.md SECURITY.md CHANGELOG.md \
+                   README.md README-ja.md \
+                   .env.example docs/brand/BRAND.md docs/brand/LICENSE-BRAND; do
+            if [ ! -f "$f" ]; then echo "::error file=$f::$f is missing"; missing=1; fi
+          done
+          exit $missing
+
+      - name: LICENSE is AGPL-3.0 and NOTICE keeps the section 7(e) term
+        run: |
+          grep -q 'GNU AFFERO GENERAL PUBLIC LICENSE' LICENSE \
+            || { echo '::error file=LICENSE::LICENSE is no longer the AGPL-3.0 text'; exit 1; }
+          grep -q 'SECTION 7(e)' NOTICE \
+            || { echo '::error file=NOTICE::the AGPL-3.0 section 7(e) trademark term is gone from NOTICE'; exit 1; }
+          grep -q 'AGPL-3.0-only' package.json \
+            || { echo '::error file=package.json::license must stay AGPL-3.0-only'; exit 1; }
+
+      - name: Brand assets are not relicensed by accident
+        run: |
+          grep -q 'NOT LICENSED UNDER THE GNU AFFERO' docs/brand/LICENSE-BRAND \
+            || { echo '::error file=docs/brand/LICENSE-BRAND::the brand-asset exclusion has been weakened'; exit 1; }
+
+      # AGPL-3.0 section 13 requires that a user interacting with the program
+      # over a network be offered its corresponding source. For a web app that
+      # means a link in the interface, so its absence is a licence violation and
+      # not a cosmetic regression.
+      - name: Section 13 source offer is still in the interface
+        run: |
+          for f in public/index.html public/admin.html public/judge.html \
+                   public/board.html public/sysadmin.html; do
+            grep -q 'data-source-link' "$f" \
+              || { echo "::error file=$f::the AGPL section 13 source link is missing"; exit 1; }
+          done

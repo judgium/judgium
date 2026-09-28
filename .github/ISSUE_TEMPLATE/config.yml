@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Security vulnerability
+    url: https://github.com/judgium/judgium/security/advisories/new
+    about: Never report a vulnerability in a public issue — a Judgium instance holds unannounced results and live judge credentials. Report it privately here. See SECURITY.md.
+  - name: 💬 Question, idea, or "would you take a PR for this?"
+    url: https://github.com/judgium/judgium/discussions
+    about: Anything open-ended — how to run a large event, whether something is a bug, proposing a direction before writing code.
+  - name: ™️ Name, logo or "Compatible with Judgium" permission
+    url: https://github.com/judgium/judgium/discussions/categories/trademark
+    about: Requests to use the Judgium name or logo. The code is AGPL-3.0 and free to use; the brand is governed by TRADEMARKS.md.

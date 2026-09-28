@@ -1,0 +1,117 @@
+name: 🐞 Bug report
+description: Something behaves incorrectly
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Not for security issues.** If this could let someone read another
+        organizer's results, score as a judge they are not, or escalate to
+        `superadmin`, close this and use
+        [private reporting](https://github.com/judgium/judgium/security/advisories/new)
+        instead. See [SECURITY.md](https://github.com/judgium/judgium/blob/main/SECURITY.md).
+
+        **Redact before you paste.** A judge link (`/j/<token>`) is a bearer
+        token — anyone holding it can score. Replace it with `<token>`, and do
+        the same for `SESSION_SECRET` and any real participant names or e-mails.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+      placeholder: |
+        Expected: the leaderboard shows rank 1 for the highest total.
+        Actual: two entries both show rank 1 and rank 2 is skipped, with only 2 judges scored.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Enough that a maintainer can get there from `npm run seed`.
+      placeholder: |
+        1. npm run seed
+        2. Open /admin, set aggregation to "average" with drop high/low on
+        3. Score entry 3 as two judges
+        4. Open /board/<slug>
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Which surface
+      multiple: true
+      options:
+        - Landing / sign-in (/, /login, /signup)
+        - Organizer console (/admin)
+        - Judge scorecard (/j/<token>)
+        - Public leaderboard (/board/<slug>)
+        - Platform administration (/sysadmin)
+        - API only (/api/...)
+        - CLI script (seed / promote / backup)
+        - Deployment / provisioning
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Release tag, or the commit SHA of `main`.
+      placeholder: v1.0.0 — or 4f3a1c2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: How you run it
+      options:
+        - Local (npm start)
+        - Local (devcontainer)
+        - Azure App Service — Linux
+        - Azure App Service — Windows
+        - Container / other PaaS
+        - Own server behind a reverse proxy
+    validations:
+      required: true
+
+  - type: input
+    id: scale
+    attributes:
+      label: Scale
+      description: Most interesting bugs here are scale- or concurrency-dependent. Rough numbers are fine.
+      placeholder: 120 entries, 14 judges, 6 criteria, ~200 viewers on the board
+
+  - type: textarea
+    id: boot-log
+    attributes:
+      label: Boot log
+      description: |
+        The first few lines of server output. It prints the detected capacity,
+        the database path and which of the three session-key sources is in
+        effect — that last one explains a surprising share of "it logged
+        everyone out" reports.
+      render: text
+
+  - type: textarea
+    id: errors
+    attributes:
+      label: Errors
+      description: Server output and browser console. Redact tokens.
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues
+          required: true
+        - label: I removed judge tokens, secrets and real participant data from everything above
+          required: true
+        - label: This is not a security vulnerability
+          required: true

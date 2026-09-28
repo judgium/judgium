@@ -1,0 +1,36 @@
+{
+  "name": "judgium",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hackathon judging platform: multi-criteria scoring, private judge links, live leaderboard.",
+  "license": "AGPL-3.0-only",
+  "author": "Taiji Hagino",
+  "homepage": "https://github.com/judgium/judgium#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/judgium/judgium.git"
+  },
+  "bugs": {
+    "url": "https://github.com/judgium/judgium/issues"
+  },
+  "type": "module",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node scripts/seed.js",
+    "promote": "node scripts/promote.js",
+    "backup": "node scripts/backup.js",
+    "test": "node --test \"test/*.test.js\""
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.1"
+  }
+}

@@ -1,0 +1,48 @@
+name: 🌍 Translation
+description: Fix a string, or add a language
+labels: [i18n, good first issue]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Translations are self-contained and among the most useful contributions
+        here — the Spanish, Chinese and Korean strings ship with no native
+        speaker reviewing them. See
+        [CONTRIBUTING.md § Translations](https://github.com/judgium/judgium/blob/main/CONTRIBUTING.md#translations),
+        and add yourself to
+        [MAINTAINERS.md](https://github.com/judgium/judgium/blob/main/MAINTAINERS.md)
+        as a reviewer for your locale in the same PR.
+
+  - type: dropdown
+    id: locale
+    attributes:
+      label: Language
+      options: ['English (en)', '日本語 (ja)', 'Español (es)', '中文 (zh)', '한국어 (ko)', 'A new language']
+    validations:
+      required: true
+
+  - type: input
+    id: key
+    attributes:
+      label: Which key
+      description: The key in `public/i18n/<locale>.json`. Leave blank when adding a language.
+      placeholder: judge.completeIncompleteWarning
+
+  - type: textarea
+    id: correction
+    attributes:
+      label: Current text, and what it should say
+      placeholder: |
+        Current (ja):  スコアカードを完成させる
+        Should be:     採点を確定する
+        Why:           "完成させる" reads as composing something; judges are confirming a submission.
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        **Please leave the brand name and tagline untranslated** — `app.name`
+        stays "Judgium", and
+        [BRAND.md § 2](https://github.com/judgium/judgium/blob/main/docs/brand/BRAND.md#2-name)
+        has the approved ジャッジアム rendering.

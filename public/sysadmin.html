@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title data-i18n="app.name">Judgium</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header class="topbar">
+    <a class="topbar__brand" href="/sysadmin" data-i18n="app.name">Judgium</a>
+    <span class="badge badge--muted" data-i18n="sys.badge">Platform</span>
+    <span class="topbar__spacer"></span>
+    <a class="btn btn--sm btn--ghost" href="/admin" data-i18n="nav.dashboard">My competitions</a>
+    <span class="topbar__meta" id="whoami"></span>
+    <button class="btn btn--sm" id="signout" data-i18n="action.signOut" type="button">Sign out</button>
+    <div id="langpick"></div>
+  </header>
+
+  <main class="shell shell--wide" id="main">
+    <p class="muted" id="boot" data-i18n="state.loading">Loading…</p>
+  </main>
+
+  <footer class="footer footer--compact">
+    <a class="footer__source" href="/source" rel="license" data-source-link data-i18n="app.source">Source code (AGPL-3.0)</a>
+  </footer>
+
+  <script type="module" src="/js/sysadmin.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+# --- dependencies ---------------------------------------------------------
+node_modules/
+
+# --- runtime data ---------------------------------------------------------
+# The whole data directory is excluded, not just the database: it also holds
+# the write-ahead log, the session-signing key and the backup folder. Nothing
+# in here belongs in a public repository.
+data/
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+
+# --- configuration --------------------------------------------------------
+# .env.example is the documented template and IS tracked; every real .env is
+# not. The negation has to come after the patterns that would match it.
+.env
+.env.*
+!.env.example
+
+# --- local tooling --------------------------------------------------------
+# Per-developer editor and assistant settings, not project configuration.
+# Matched by shape rather than by vendor, so any tool that drops a local
+# settings file into its own dot-directory is covered without naming it.
+.*/settings.local.json
+**/settings.local.json
+.vscode/
+.idea/
+
+# --- logs and OS/editor noise ---------------------------------------------
+npm-debug.log*
+yarn-error.log*
+*.log
+.DS_Store
+Thumbs.db
+*.swp

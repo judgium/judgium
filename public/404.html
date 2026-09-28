@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="error.notFound.title">Page not found</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header class="topbar">
+    <a class="topbar__brand" href="/" data-i18n="app.name">Judgium</a>
+    <span class="topbar__spacer"></span>
+    <div id="langpick"></div>
+  </header>
+  <main class="shell shell--narrow">
+    <div class="card stack">
+      <h1 data-i18n="error.notFound.title">Page not found</h1>
+      <p class="muted" data-i18n="error.notFound.body"></p>
+      <p><a href="/" data-i18n="error.home">Go to the home page</a></p>
+    </div>
+  </main>
+  <script type="module">
+    import { initI18n } from '/js/i18n.js';
+    import { mountLanguagePicker } from '/js/lang.js';
+    await initI18n();
+    mountLanguagePicker(document.getElementById('langpick'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+name: 💡 Feature request
+description: Propose a change to what Judgium does
+labels: [enhancement, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Judgium is deliberately small: two runtime dependencies, no build step,
+        one SQLite file. The most useful thing you can do here is explain the
+        **problem during a real event** — the solution is usually easier to find
+        than the problem is to describe.
+
+        Worth knowing first
+        ([CONTRIBUTING.md](https://github.com/judgium/judgium/blob/main/CONTRIBUTING.md#before-you-write-code)):
+        a new runtime dependency, a build step, a frontend framework, a second
+        database backend, or a scoring rule specific to one event's rules will
+        very likely be declined. ["This belongs in a fork" is a normal
+        answer](https://github.com/judgium/judgium/blob/main/GOVERNANCE.md#scope)
+        here, and AGPL-3.0 plus the
+        [rename checklist](https://github.com/judgium/judgium/blob/main/TRADEMARKS.md#4-forks-must-be-renamed)
+        make taking it straightforward.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What went wrong at an actual event, or would. Not the feature — the problem.
+      placeholder: |
+        Our panel had two judges arrive an hour late. Their entries showed as
+        scored by 3 of 5 judges and nothing on the board indicated the missing
+        two would change the order, so we announced a winner that then moved.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you tried instead
+      description: Existing features, a workaround, another tool. What was wrong with each?
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Where this belongs
+      options:
+        - Core — every event needs it
+        - Optional — a setting most events leave off
+        - Not sure
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contributing
+      options:
+        - label: I am willing to open a PR for this if you agree with the direction
+        - label: I searched existing issues and Discussions
+          required: true

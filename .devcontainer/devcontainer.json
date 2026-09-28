@@ -1,0 +1,16 @@
+{
+  "name": "Judgium",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Judgium",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": ".devcontainer/post_create.sh"
+}

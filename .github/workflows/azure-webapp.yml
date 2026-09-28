@@ -1,0 +1,57 @@
+# Builds on Linux and zip-deploys to Azure App Service.
+#
+# Required repository configuration:
+#   secrets.AZURE_WEBAPP_PUBLISH_PROFILE  - download from the App Service overview
+#   vars.AZURE_WEBAPP_NAME                - the App Service name
+name: Deploy to Azure App Service
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: azure-webapp-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Install on Linux so better-sqlite3 resolves its linux-x64 prebuilt
+      # binary. Never zip a node_modules built on macOS or Windows.
+      # .npmrc disables dependency install scripts, so this needs no toolchain.
+      - name: Install production dependencies
+        run: npm ci --omit=dev
+
+      - name: Build deployment package
+        run: |
+          zip -r deploy.zip . \
+            -x '.git/*' '.github/*' '.devcontainer/*' 'test/*' 'data/*' \
+               'deploy/*' '*.db' '*.db-shm' '*.db-wal' '.env'
+
+      - name: Deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: deploy.zip
