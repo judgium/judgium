@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
   name          TEXT NOT NULL,
   password_hash TEXT NOT NULL,
   locale        TEXT NOT NULL DEFAULT 'en',
-  -- organizer | superadmin
+  -- organizer | participant | superadmin
   role          TEXT NOT NULL DEFAULT 'organizer',
   -- active | suspended. Suspended accounts keep their data but cannot sign in.
   status        TEXT NOT NULL DEFAULT 'active',
@@ -63,6 +63,10 @@ CREATE TABLE IF NOT EXISTS competitions (
   show_scores_on_board INTEGER NOT NULL DEFAULT 1,
   allow_notes          INTEGER NOT NULL DEFAULT 1,
   allow_decimals       INTEGER NOT NULL DEFAULT 1,
+  -- 1 while participants may add and edit their own entries at /enter/<slug>.
+  -- Off by default: a competition accepts submissions only once its organizer
+  -- says so, and turning it off is the deadline.
+  submissions_open     INTEGER NOT NULL DEFAULT 0,
   -- bumped on every change that can affect a leaderboard; drives cache busting
   rev                  INTEGER NOT NULL DEFAULT 0,
   created_at           TEXT NOT NULL,
@@ -103,6 +107,10 @@ CREATE TABLE IF NOT EXISTS entries (
   project_url    TEXT NOT NULL DEFAULT '',
   video_url      TEXT NOT NULL DEFAULT '',
   table_label    TEXT NOT NULL DEFAULT '',
+  -- The participant who submitted this entry, or NULL when an organizer
+  -- created it. Set to NULL rather than cascading on account deletion, so the
+  -- entry and its scores survive the submitter leaving.
+  submitted_by   TEXT REFERENCES users(id) ON DELETE SET NULL,
   sort_order     INTEGER NOT NULL DEFAULT 0,
   created_at     TEXT NOT NULL
 );

@@ -127,10 +127,25 @@ licence does not apply automatically.
 
 ## Scope
 
-Judgium runs hackathon judging: entries, rubrics, judges, scoring, leaderboard,
-exports. Deliberately not in scope, and best served by a fork:
+Judgium runs a hackathon from the moment entrants submit to the moment results
+are announced: submissions, entries, rubrics, judges, scoring, leaderboard,
+exports.
 
-- Submission collection, repository review, CI or demo hosting
+**Submission collection came into scope in this release.** It was listed as out
+of scope when the project was first published, on the reasoning that an external
+form plus an import would do. That was wrong for asynchronous judging, where the
+repository and recorded-demo URLs are the thing being judged and re-keying them
+is the whole registration effort. Participants now have accounts and a
+submission page of their own. What stays out of scope is everything that follows
+from a submission rather than the submission itself.
+
+Deliberately not in scope, and best served by a fork:
+
+- Repository review, CI, static analysis or demo hosting - Judgium stores the
+  URL a judge opens; it does not fetch, build or run what is behind it
+- Approval or moderation queues for submissions. A judge who finds an entry
+  invalid leaves it unscored, and an entry no judge scores is unranked, so the
+  panel already has the only veto the result needs
 - Ticketing, attendee registration, team formation, venue logistics
 - A plugin system, a second database backend, or a build step
 - Event-specific scoring rules that are not expressible as a rubric

@@ -81,7 +81,8 @@ jobs:
             [ -f "$f" ] || { echo "::error file=$f::$f is missing"; exit 1; }
           done
           for f in public/index.html public/admin.html public/judge.html \
-                   public/board.html public/sysadmin.html public/404.html; do
+                   public/board.html public/sysadmin.html \
+                   public/enter.html public/404.html; do
             grep -q '/brand/icon-32.png' "$f" \
               || { echo "::error file=$f::the page does not reference the brand icon"; exit 1; }
           done
@@ -93,7 +94,8 @@ jobs:
       - name: Section 13 source offer is still in the interface
         run: |
           for f in public/index.html public/admin.html public/judge.html \
-                   public/board.html public/sysadmin.html; do
+                   public/board.html public/sysadmin.html \
+                   public/enter.html public/404.html; do
             grep -q 'data-source-link' "$f" \
               || { echo "::error file=$f::the AGPL section 13 source link is missing"; exit 1; }
           done

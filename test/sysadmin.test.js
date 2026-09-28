@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { createFullCompetition, signUpOrganizer, signUpSuperadmin, startTestServer } from './helpers.js';
+import { migrations } from '../src/db/migrations.js';
 
 const harness = await startTestServer();
 test.after(() => harness.close());
@@ -53,7 +54,10 @@ test('the overview counts every tenant, not just the administrator', async () =>
   // The storage block is what an operator checks for durability.
   assert.ok(res.body.storage.dbPath.endsWith('.db'));
   assert.equal(res.body.storage.sessionsSurviveRestart, true);
-  assert.equal(res.body.storage.schemaVersion, '002_audit_log');
+  // Compared against the last migration rather than a literal, so adding one
+  // does not break this test - what matters is that the reported version is
+  // the newest applied, not which id that happens to be today.
+  assert.equal(res.body.storage.schemaVersion, migrations.at(-1).id);
 });
 
 test('accounts can be searched and filtered across the whole deployment', async () => {

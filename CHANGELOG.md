@@ -13,6 +13,30 @@ that says so at the top of its entry.
 
 ### Added
 
+- **Participant self-submission.** A sixth surface at `/enter/<slug>`, reached
+  through a link the organizer shares rather than any public list of
+  competitions. Entrants create their own account there and submit their own
+  projects: name, team, track, description, repository URL and demo-video URL.
+  - **The submission window is a single flag** (`submissionsOpen`, Setup tab).
+    Turning it off is the deadline: no new entries, no edits, no withdrawals.
+    Entrants keep read access to what they sent. It defaults to off, so
+    upgrading does not open a competition that already exists.
+  - **No cap, no duplicate detection, no approval queue.** One account may
+    submit any number of entries to one competition; hackathons that allow
+    several attempts per team are normal. A judge who finds an entry invalid
+    leaves it unscored, and `scoring.js` already excludes a judge with no values
+    from that entry, so an entry nobody scores is simply unranked.
+  - **Participant accounts are walled off.** A new `participant` role, plus a
+    `requireOrganizer` gate on the competition, roster and export routers --
+    without it an account created through a submission link could have run a
+    competition of its own. Somebody else's submission reads as 404.
+  - Entries now carry `submitted_by`; the Entries tab names the submitter, and
+    entries an organizer added themselves show none.
+  - Schema migration `003_participant_submissions`, applied at boot.
+  - Ten tests in `test/participant.test.js` covering the window, the absence of
+    a cap, cross-participant isolation, the role wall, and the repository and
+    video URLs reaching the judge.
+
 - `TRADEMARKS.md` — trademark policy for the Judgium name and logo, reserved
   under AGPL-3.0 § 7(e). Nominative use and "Compatible with Judgium" claims are
   permitted under stated conditions; redistributed forks must be renamed.

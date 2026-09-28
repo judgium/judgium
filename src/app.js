@@ -14,6 +14,7 @@ import { authRouter } from './routes/auth.js';
 import { competitionsRouter } from './routes/competitions.js';
 import { exportsRouter } from './routes/exports.js';
 import { judgeRouter } from './routes/judge.js';
+import { participantRouter } from './routes/participant.js';
 import { publicRouter } from './routes/public.js';
 import { rosterRouter } from './routes/roster.js';
 import { sysadminRouter } from './routes/sysadmin.js';
@@ -116,6 +117,7 @@ export function createApp() {
   app.use('/api/competitions', rosterRouter);
   app.use('/api/competitions', exportsRouter);
   app.use('/api/judge', judgeRouter);
+  app.use('/api/enter', participantRouter);
   app.use('/api/board', publicRouter);
   app.use('/api/sysadmin', sysadminRouter);
 
@@ -154,6 +156,7 @@ export function createApp() {
   app.get('/sysadmin', page('sysadmin.html'));
   app.get('/sysadmin/*splat', page('sysadmin.html'));
   app.get('/j/:token', page('judge.html'));
+  app.get('/enter/:slug', page('enter.html'));
   app.get('/board/:slug', page('board.html'));
 
   app.use((req, res, next) => {

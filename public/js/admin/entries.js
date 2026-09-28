@@ -63,7 +63,15 @@ export function renderEntriesTab(host, data, ctx) {
                 'tr',
                 {},
                 el('td', { class: 'faint tabnum', text: String(position + 1) }),
-                el('td', {}, el('span', { class: 'break', text: entry.name })),
+                el(
+                  'td',
+                  {},
+                  el('span', { class: 'break', text: entry.name }),
+                  // Who sent it in. Absent for entries the organizer added themselves,
+                  // which is how the two are told apart at a glance.
+                  entry.submittedBy &&
+                    el('div', { class: 'small faint', text: t('entries.submittedBy', { name: entry.submittedBy }) }),
+                ),
                 el('td', {}, el('span', { class: 'break muted small', text: entry.teamName || '—' })),
                 data.tracks.length ? el('td', { class: 'small muted', text: trackName(data, entry.trackId) }) : null,
                 el('td', { class: 'small muted', text: entry.tableLabel || '—' }),

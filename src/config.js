@@ -131,7 +131,8 @@ export const config = {
 export const LOCALES = ['en', 'ja', 'es', 'zh', 'ko'];
 export const DEFAULT_LOCALE = 'en';
 
-/** organizer: owns their own competitions. superadmin: owns the platform. */
-export const ROLES = ['organizer', 'superadmin'];
+/** organizer: owns their own competitions. superadmin: owns the platform.
+ *  participant: submits entries to a competition and sees nothing else. */
+export const ROLES = ['organizer', 'participant', 'superadmin'];
 export const DEFAULT_ROLE = 'organizer';
 export const USER_STATUSES = ['active', 'suspended'];

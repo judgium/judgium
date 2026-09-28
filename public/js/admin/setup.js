@@ -68,6 +68,32 @@ export function renderSetupTab(host, data, ctx) {
     checkbox('setup.showScores', c.showScoresOnBoard, (value) => patch({ showScoresOnBoard: value }), 'setup.showScores.help'),
   );
 
+  // Participant self-submission. The flag is the deadline: turning it off stops
+  // new entries, edits and withdrawals at once, which is why the label says so
+  // rather than calling itself "open for submissions".
+  const submissionCard = el(
+    'section',
+    { class: 'card stack' },
+    el('h2', { text: t('setup.submissions') }),
+    el('p', { class: 'card__hint', text: t('setup.submissions.hint') }),
+    checkbox('setup.submissionsOpen', c.submissionsOpen, (value) => patch({ submissionsOpen: value }), 'setup.submissionsOpen.help'),
+    c.submissionsOpen
+      ? linkRow(data.enterUrl, { label: t('setup.enterUrl') })
+      : el('p', { class: 'small muted', text: t('setup.submissionsClosedNote') }),
+    c.submissionsOpen &&
+      el(
+        'div',
+        { class: 'row' },
+        el('a', {
+          class: 'btn btn--sm btn--outline',
+          href: `/enter/${c.slug}`,
+          target: '_blank',
+          rel: 'noopener',
+          text: t('setup.openEnterPage'),
+        }),
+      ),
+  );
+
   const maxPerJudge = data.criteria
     .filter((k) => !k.trackId)
     .reduce((sum, k) => sum + (c.scoringMode === 'weighted' ? k.weight : k.maxScore), 0);
@@ -141,7 +167,7 @@ export function renderSetupTab(host, data, ctx) {
     ),
   );
 
-  replace(host, errorHost, basics, statusCard, boardCard, scoringCard, tracksCard, danger);
+  replace(host, errorHost, basics, statusCard, submissionCard, boardCard, scoringCard, tracksCard, danger);
 }
 
 function renderTracks(data, ctx, errorHost) {

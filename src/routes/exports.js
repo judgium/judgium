@@ -4,10 +4,11 @@ import { contentDisposition, csvFilename, leaderboardCsv, notesCsv, perJudgeCsv 
 import { noStore, wrap } from '../lib/http.js';
 import { getResults } from '../services/results.js';
 import { loadOwnedCompetition } from '../middleware/competition.js';
-import { requireUser } from '../middleware/session.js';
+import { requireUser, requireOrganizer } from '../middleware/session.js';
 
 export const exportsRouter = express.Router();
 exportsRouter.use(requireUser);
+exportsRouter.use(requireOrganizer);
 exportsRouter.param('competitionId', (req, res, next) => loadOwnedCompetition(req, res, next));
 
 function sendCsv(res, competitionName, suffix, body) {

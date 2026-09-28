@@ -20,6 +20,7 @@ export function baseUrl(req) {
 
 export const judgeLink = (req, token) => `${baseUrl(req)}/j/${token}`;
 export const boardLink = (req, slug) => `${baseUrl(req)}/board/${slug}`;
+export const enterLink = (req, slug) => `${baseUrl(req)}/enter/${slug}`;
 
 export function noStore(res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');

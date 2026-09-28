@@ -11,9 +11,10 @@
 [![Node](https://img.shields.io/badge/node-%E2%89%A520.11-026e00)](package.json)
 
 Judgium is a judging platform that connects everything from hackathon project
-entry through judging to final tallying in one place. Each judge is issued their
-own private link and scores every criterion during the demo pitches, and the
-leaderboard is complete at the end.
+entry through judging to final tallying in one place. Entrants submit their own
+projects, each judge is issued their own private link and scores every criterion
+— watching live, or reading a recorded demo and a repository at their own pace
+— and the leaderboard is complete at the end.
 
 Node.js + Express + SQLite. No build step, no framework runtime, two runtime
 dependencies (`express`, `better-sqlite3`) and one dev dependency (`jsdom`,
@@ -36,12 +37,13 @@ the suite (108 tests: scoring, API, concurrency, persistence, platform
 administration, and the five pages driven through jsdom — no real browser or
 network needed).
 
-## The five surfaces
+## The six surfaces
 
 | Surface | URL | Who opens it |
 |---|---|---|
 | Landing / sign-in | `/`, `/login`, `/signup` | Organizers |
 | Organizer console | `/admin` | Organizers (session cookie) |
+| Submission page | `/enter/<slug>` | Entrants — their own account, their own projects |
 | Judge scorecard | `/j/<token>` | Judges — no account, no install |
 | Public leaderboard | `/board/<slug>` | The demo-room screen, teams, sponsors |
 | Platform administration | `/sysadmin` | Whoever operates the deployment |
@@ -214,6 +216,56 @@ box, and prev/next navigation. Scores save as they type. **Mark as complete**
 submits their scorecard; an incomplete card warns before it lets them force it.
 Organizers can reopen a scorecard, clear one judge's scores, or issue a fresh
 link that instantly retires the old one.
+
+## Participant submissions
+
+Entries can come from the organizer, from the entrants, or both in the same
+competition. **Nothing is open until you say so:** `submissionsOpen` starts off,
+and an upgrade does not change that for a competition that already exists.
+
+1. **Open the window** (Setup tab → Accept participant submissions). A
+   submission link appears: `/enter/<slug>`, alongside the board link and
+   shaped the same way.
+2. **Share it.** Entrants open it, create an account there, and submit. There is
+   no public list of competitions — the link is how they find yours, exactly as
+   a judge link is how a judge finds their scorecard.
+3. **Close the window.** Turning the flag off *is* the deadline: no new entries,
+   no edits, no withdrawals, all at once. Entrants can still read what they sent.
+
+What an entrant controls: project name, team, track (from the ones you defined),
+description, repository URL, demo-video URL. What they cannot: the table label,
+which is where you seat them in the demo room, and anybody else's submission.
+
+**No cap, no duplicate check, no approval.** One account may submit as many
+entries as it likes to the same competition, because plenty of hackathons allow
+several attempts per team, and two entries with the same name are not an error.
+Nothing queues for an organizer to wave through either — a judge who decides an
+entry is not worth scoring leaves it untouched, and an entry no judge scored has
+no rank and sinks to the bottom of the board. The panel is the filter.
+
+The Entries tab shows who submitted what, by name; entries you added yourself
+show no submitter.
+
+**Participant accounts see nothing else.** A participant signing in cannot reach
+`/admin`, cannot create a competition, cannot export, and cannot read another
+entrant's submission — asserted in `test/participant.test.js` rather than left
+to the UI.
+
+## Judging live, or asynchronously
+
+The same rubric and the same leaderboard serve both, and the difference is only
+what a judge looks at.
+
+| | Live pitches | Read at their own pace |
+|---|---|---|
+| Table label | Seats the team in the demo room | Leave empty |
+| Repository and video URLs | Optional | **The submission** |
+| Scoring, aggregation, board | Identical | Identical |
+
+The judge scorecard shows the description and both URLs as links for every
+entry, so a panel can review a recorded demo and a repository without anyone
+presenting. Entry URLs must be `http(s)`; `javascript:` and `data:` are
+rejected.
 
 ## Scoring model
 
@@ -401,12 +453,13 @@ src/
     audit.js              append-only record of administrative writes
     auth.js  ids.js  validate.js  ratelimit.js  templates.js  http.js  errors.js
   middleware/             cookies, session, roles, competition ownership
-  routes/                 auth, competitions, roster, judge, public, exports, sysadmin
+  routes/                 auth, competitions, roster, judge, participant, public,
+                          exports, sysadmin
   services/
     results.js            memoised leaderboard + broadcast
     platform.js           superadmin bootstrap + cross-tenant counters
 public/
-  index|admin|sysadmin|judge|board|404.html
+  index|admin|enter|sysadmin|judge|board|404.html
   css/app.css             one stylesheet, light + dark, mobile first
   js/                     ES modules, no bundler
   i18n/                   en, ja, es, zh, ko
@@ -442,6 +495,10 @@ GET    /api/competitions/:id/export/{leaderboard.csv,per-judge.csv,notes.csv,ful
 
 GET    /api/judge/:token                        PATCH /api/judge/:token/entries/:entryId
 POST   /api/judge/:token/{complete,reopen,locale}
+
+GET    /api/enter/:slug                         POST  /api/enter/:slug/signup
+POST   /api/enter/:slug/entries                 PATCH /api/enter/:slug/entries/:entryId
+DELETE /api/enter/:slug/entries/:entryId
 
 GET    /api/board/:slug                         GET   /api/board/:slug/live           (SSE)
 GET    /api/meta                                GET   /healthz

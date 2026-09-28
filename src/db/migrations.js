@@ -69,6 +69,26 @@ export const migrations = [
       addColumn(db, 'audit_log', 'target_label', `TEXT NOT NULL DEFAULT ''`);
     },
   },
+  {
+    // Participant self-submission. Entries gain a submitter, competitions gain
+    // the flag that opens and closes the submission window.
+    //
+    // submissions_open defaults to 0 so an existing deployment does not start
+    // accepting submissions the moment it upgrades - the organizer opts in.
+    // submitted_by is nullable because every entry that already exists was
+    // created by an organizer, and stays that way.
+    id: '003_participant_submissions',
+    up(db) {
+      addColumn(db, 'competitions', 'submissions_open', 'INTEGER NOT NULL DEFAULT 0');
+      // No REFERENCES clause here: SQLite cannot add a foreign key with
+      // ALTER TABLE ADD COLUMN, so the constraint exists only in schema.sql for
+      // fresh databases. Deletion is handled in application code either way,
+      // which is why account deletion nulls this column explicitly.
+      addColumn(db, 'entries', 'submitted_by', 'TEXT');
+      db.exec('CREATE INDEX IF NOT EXISTS idx_entries_submitter ON entries(submitted_by)');
+      db.exec(`UPDATE competitions SET submissions_open = 0 WHERE submissions_open IS NULL`);
+    },
+  },
 ];
 
 /**

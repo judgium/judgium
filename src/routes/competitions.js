@@ -2,17 +2,18 @@ import express from 'express';
 import { getDb } from '../db/index.js';
 import { badRequest, conflict } from '../lib/errors.js';
 import { hub } from '../lib/events.js';
-import { boardLink, judgeLink, noStore, wrap } from '../lib/http.js';
+import { boardLink, enterLink, judgeLink, noStore, wrap } from '../lib/http.js';
 import { newId, slugify } from '../lib/ids.js';
 import { templateCriteria } from '../lib/templates.js';
 import { bool, oneOf, str } from '../lib/validate.js';
 import { config } from '../config.js';
 import { boardPayload, dropCache, getResults, touchCompetition } from '../services/results.js';
 import { loadOwnedCompetition } from '../middleware/competition.js';
-import { requireUser } from '../middleware/session.js';
+import { requireUser, requireOrganizer } from '../middleware/session.js';
 
 export const competitionsRouter = express.Router();
 competitionsRouter.use(requireUser);
+competitionsRouter.use(requireOrganizer);
 
 const STATUSES = ['draft', 'live', 'closed'];
 const SCORING_MODES = ['points', 'weighted'];
@@ -31,6 +32,7 @@ const summarize = (row, counts) => ({
   showScoresOnBoard: !!row.show_scores_on_board,
   allowNotes: !!row.allow_notes,
   allowDecimals: !!row.allow_decimals,
+  submissionsOpen: !!row.submissions_open,
   rev: row.rev,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
@@ -152,6 +154,9 @@ competitionsRouter.get(
         judgesCompleted: results.stats.judgesCompleted,
       }),
       boardUrl: boardLink(req, c.public_slug),
+      // The link an organizer hands to entrants. Shown whether or not the
+      // window is open, so it can be distributed before it opens.
+      enterUrl: enterLink(req, c.public_slug),
       tracks: results.tracks.map((t) => ({ id: t.id, name: t.name, sortOrder: t.sort_order })),
       criteria: results.criteria.map((k) => ({
         id: k.id,
@@ -163,7 +168,12 @@ competitionsRouter.get(
         sortOrder: k.sort_order,
       })),
       entries: db
-        .prepare('SELECT * FROM entries WHERE competition_id = ? ORDER BY sort_order, created_at')
+        .prepare(
+          `SELECT e.*, u.name AS submitter_name
+             FROM entries e LEFT JOIN users u ON u.id = e.submitted_by
+            WHERE e.competition_id = ?
+            ORDER BY e.sort_order, e.created_at`,
+        )
         .all(c.id)
         .map((e) => ({
           id: e.id,
@@ -174,6 +184,9 @@ competitionsRouter.get(
           projectUrl: e.project_url,
           videoUrl: e.video_url,
           tableLabel: e.table_label,
+          // The participant who submitted it, by name only, or null when an
+          // organizer added the entry themselves.
+          submittedBy: e.submitted_by ? (e.submitter_name ?? null) : null,
           sortOrder: e.sort_order,
         })),
       judges: judges.map((j) => ({
@@ -223,6 +236,9 @@ competitionsRouter.patch(
         body.showScoresOnBoard === undefined ? c.show_scores_on_board : bool(body.showScoresOnBoard) ? 1 : 0,
       allow_notes: body.allowNotes === undefined ? c.allow_notes : bool(body.allowNotes) ? 1 : 0,
       allow_decimals: body.allowDecimals === undefined ? c.allow_decimals : bool(body.allowDecimals) ? 1 : 0,
+      // The submission window. Turning it off is the deadline: a participant
+      // can no longer add, edit or withdraw at /enter/<slug>.
+      submissions_open: body.submissionsOpen === undefined ? c.submissions_open : bool(body.submissionsOpen) ? 1 : 0,
     };
 
     db.prepare(
@@ -230,7 +246,7 @@ competitionsRouter.patch(
           SET name = @name, description = @description, status = @status, scoring_mode = @scoring_mode,
               aggregate = @aggregate, drop_high_low = @drop_high_low, public_board = @public_board,
               show_scores_on_board = @show_scores_on_board, allow_notes = @allow_notes,
-              allow_decimals = @allow_decimals
+              allow_decimals = @allow_decimals, submissions_open = @submissions_open
         WHERE id = @id`,
     ).run({ ...patch, id: c.id });
 

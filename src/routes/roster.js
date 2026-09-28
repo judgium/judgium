@@ -8,11 +8,12 @@ import { templateCriteria } from '../lib/templates.js';
 import { email as vEmail, num, oneOf, optionalUrl, str } from '../lib/validate.js';
 import { touchCompetition } from '../services/results.js';
 import { loadOwnedCompetition, nextSortOrder } from '../middleware/competition.js';
-import { requireUser } from '../middleware/session.js';
+import { requireUser, requireOrganizer } from '../middleware/session.js';
 import { LOCALES } from '../config.js';
 
 export const rosterRouter = express.Router();
 rosterRouter.use(requireUser);
+rosterRouter.use(requireOrganizer);
 // Runs once per request for every route below, all of which are :competitionId
 // scoped. Using param() rather than use('/:competitionId') keeps the ownership
 // check attached to the parameter itself, so a new route cannot forget it.
@@ -241,6 +242,10 @@ const entryView = (e) => ({
   projectUrl: e.project_url,
   videoUrl: e.video_url,
   tableLabel: e.table_label,
+  // Who submitted it: the participant's name, or null when an organizer
+  // created the entry. Lets the Entries tab tell the two apart without
+  // exposing the submitter's e-mail or account id.
+  submittedBy: e.submitted_by ? (e.submitter_name ?? null) : null,
   sortOrder: e.sort_order,
 });
 
@@ -283,7 +288,7 @@ rosterRouter.post(
       now(),
     );
     touchCompetition(req.competition.id, { db });
-    res.status(201).json({ entry: entryView(db.prepare('SELECT * FROM entries WHERE id = ?').get(id)) });
+    res.status(201).json({ entry: entryView(db.prepare('SELECT e.*, u.name AS submitter_name FROM entries e LEFT JOIN users u ON u.id = e.submitted_by WHERE e.id = ?').get(id)) });
   }),
 );
 
@@ -371,7 +376,7 @@ rosterRouter.patch(
               project_url = @project_url, video_url = @video_url, table_label = @table_label WHERE id = @id`,
     ).run({ ...data, id: existing.id });
     touchCompetition(req.competition.id, { db });
-    res.json({ entry: entryView(db.prepare('SELECT * FROM entries WHERE id = ?').get(existing.id)) });
+    res.json({ entry: entryView(db.prepare('SELECT e.*, u.name AS submitter_name FROM entries e LEFT JOIN users u ON u.id = e.submitted_by WHERE e.id = ?').get(existing.id)) });
   }),
 );
 

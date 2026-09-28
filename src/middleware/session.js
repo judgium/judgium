@@ -50,6 +50,36 @@ export function requireUser(req, _res, next) {
 }
 
 export const isSuperadmin = (user) => user?.role === 'superadmin';
+export const isParticipant = (user) => user?.role === 'participant';
+
+/**
+ * Gate for everything an organizer owns.
+ *
+ * Competition-scoped routes are already safe: loadOwnedCompetition compares
+ * owner_id and answers 404. The routes that are not scoped to one competition
+ * are the hole this closes - without it a participant account could POST
+ * /api/competitions and run a competition of its own, having signed up through
+ * a submission link. A participant is told 403 rather than 404 because, unlike
+ * a competition id, the route is not a secret.
+ */
+export function requireOrganizer(req, _res, next) {
+  if (req.suspended) return next(accountSuspended());
+  if (!req.user) return next(unauthorized());
+  if (isParticipant(req.user)) {
+    return next(forbidden('This account can only submit entries'));
+  }
+  next();
+}
+
+/** Gate for the participant submission API. */
+export function requireParticipant(req, _res, next) {
+  if (req.suspended) return next(accountSuspended());
+  if (!req.user) return next(unauthorized());
+  if (!isParticipant(req.user)) {
+    return next(forbidden('Sign in with a participant account to submit entries'));
+  }
+  next();
+}
 
 /** Gate for the cross-tenant platform administration API. */
 export function requireSuperadmin(req, _res, next) {
