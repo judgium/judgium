@@ -2,7 +2,8 @@
 #
 # Provisions Judgium on Azure App Service (Linux, built-in Node runtime).
 #
-#   ./deploy/provision-azure.sh my-resource-group judgium-demo japaneast
+#   ./deploy/provision-azure.sh my-resource-group judgium-demo japaneast \
+#       https://github.com/judgium/judgium
 #
 # Idempotent: re-running updates the existing app's settings.
 set -euo pipefail
@@ -13,6 +14,13 @@ LOCATION="${3:-japaneast}"
 PLAN_NAME="${APP_NAME}-plan"
 # B1 is the smallest tier with Always On, which an SSE app needs so the
 # container is not unloaded between demos. P0v3/P1v3 for larger events.
+# AGPL-3.0 section 13: every user who interacts with this deployment over a
+# network must be able to get the source of the version it is running. The
+# page footer links to /source, which redirects here. Point it at the
+# repository the deployed code came from -- and note that a PRIVATE repository
+# does not satisfy section 13 for a publicly reachable instance.
+SOURCE_URL="${4:-${SOURCE_URL:-https://github.com/judgium/judgium}}"
+
 SKU="${SKU:-B1}"
 NODE_VERSION="${NODE_VERSION:-NODE|22-lts}"
 
@@ -50,6 +58,7 @@ az webapp config appsettings set \
     NODE_ENV=production \
     SESSION_SECRET="$SESSION_SECRET" \
     PUBLIC_BASE_URL="https://${HOST}" \
+    SOURCE_URL="$SOURCE_URL" \
     DATABASE_PATH=/home/data/judgium.db \
     SCM_DO_BUILD_DURING_DEPLOYMENT=true \
     WEBSITE_NODE_DEFAULT_VERSION=~22 \
@@ -90,6 +99,7 @@ Provisioned.
   App           https://${HOST}
   Health        https://${HOST}/healthz
   Database      /home/data/judgium.db  (persistent share)
+  Source link   ${SOURCE_URL}  (AGPL-3.0 section 13)
 
 Deploy the code with either:
 
