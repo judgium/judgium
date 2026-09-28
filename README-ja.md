@@ -373,8 +373,18 @@ board refresh     coalesced to at most 1 push / 150ms
 az webapp up --name <app-name> --resource-group <resource-group>
 ```
 
-あるいは `.github/workflows/azure-webapp.yml` を設定して（`vars.AZURE_WEBAPP_NAME`、
-`secrets.AZURE_WEBAPP_PUBLISH_PROFILE`）`main` にプッシュします。
+あるいは `.github/workflows/azure-webapp.yml` を設定して `main` にプッシュします。
+認証は OIDC なので、長期資格情報をリポジトリに置きません。必要なのは機密でない
+リポジトリ変数 4 つと、Azure 側のフェデレーション資格情報だけです。
+
+```
+vars.AZURE_CLIENT_ID  AZURE_TENANT_ID  AZURE_SUBSCRIPTION_ID  AZURE_WEBAPP_NAME
+```
+
+デプロイジョブは `environment: production` を宣言しているため、フェデレーション
+資格情報の subject は `repo:<owner>/<repo>:environment:production` でなければ
+なりません（`ref:refs/heads/main` では**ありません**）。ここを間違えるとサインイン
+ステップが `AADSTS70021` で失敗します。
 
 App Service で重要なのは 3 点です。
 

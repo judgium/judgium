@@ -1,8 +1,20 @@
 # Builds on Linux and zip-deploys to Azure App Service.
 #
-# Required repository configuration:
-#   secrets.AZURE_WEBAPP_PUBLISH_PROFILE  - download from the App Service overview
-#   vars.AZURE_WEBAPP_NAME                - the App Service name
+# Authenticates with OIDC (workload identity federation), so no long-lived
+# credential is stored in this repository. Required configuration, all of it
+# non-secret and therefore repository *variables* rather than secrets:
+#
+#   vars.AZURE_CLIENT_ID        app registration (application) id
+#   vars.AZURE_TENANT_ID        directory id
+#   vars.AZURE_SUBSCRIPTION_ID  subscription the app service lives in
+#   vars.AZURE_WEBAPP_NAME      the App Service name
+#
+# On the Azure side the app registration needs a federated credential whose
+# subject matches this workflow exactly. The deploy job declares
+# `environment: production`, so the token's subject is
+#   repo:<owner>/<repo>:environment:production
+# and NOT repo:<owner>/<repo>:ref:refs/heads/main. Getting that wrong is the
+# usual reason azure/login fails with AADSTS70021.
 name: Deploy to Azure App Service
 
 on:
@@ -13,6 +25,10 @@ on:
 concurrency:
   group: azure-webapp-${{ github.ref }}
   cancel-in-progress: true
+
+# Least privilege by default; the deploy job adds id-token for OIDC.
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -30,6 +46,11 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      contents: read
+      # Lets the runner request the OIDC token azure/login exchanges. Without
+      # it the login step fails before it reaches Azure.
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -38,7 +59,7 @@ jobs:
           cache: npm
 
       # Install on Linux so better-sqlite3 resolves its linux-x64 prebuilt
-      # binary. Never zip a node_modules built on macOS or Windows.
+      # binary. Never zip a node_modules built on macOS, Windows or arm64.
       # .npmrc disables dependency install scripts, so this needs no toolchain.
       - name: Install production dependencies
         run: npm ci --omit=dev
@@ -47,11 +68,40 @@ jobs:
         run: |
           zip -r deploy.zip . \
             -x '.git/*' '.github/*' '.devcontainer/*' 'test/*' 'data/*' \
-               'deploy/*' '*.db' '*.db-shm' '*.db-wal' '.env'
+               'deploy/*' 'docs/*' '*.db' '*.db-shm' '*.db-wal' '.env'
+
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ vars.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: deploy.zip
+
+      # A deployment that lands but does not boot is worse than a failed one,
+      # because nothing says so. /healthz answers 200 only when the database
+      # opened and answered a query.
+      - name: Verify the deployment booted
+        run: |
+          url="https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net/healthz"
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 "$url" || true)
+            if [ "$code" = "200" ]; then
+              echo "healthy after ${i} attempt(s):"
+              cat /tmp/health.json
+              exit 0
+            fi
+            echo "attempt ${i}: HTTP ${code}"
+            sleep 10
+          done
+          echo "::error::$url never returned 200; the deployment is live but not serving"
+          exit 1
+
+      - name: Sign out
+        if: always()
+        run: az logout || true

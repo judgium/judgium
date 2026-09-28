@@ -394,8 +394,19 @@ HTTPS-only, and generates a `SESSION_SECRET`. Then deploy:
 az webapp up --name <app-name> --resource-group <resource-group>
 ```
 
-or push to `main` with `.github/workflows/azure-webapp.yml` configured
-(`vars.AZURE_WEBAPP_NAME`, `secrets.AZURE_WEBAPP_PUBLISH_PROFILE`).
+or push to `main` with `.github/workflows/azure-webapp.yml` configured. It
+authenticates with OIDC, so no long-lived credential is stored in the
+repository -- four non-secret repository *variables* and a federated credential
+on the Azure side:
+
+```
+vars.AZURE_CLIENT_ID  AZURE_TENANT_ID  AZURE_SUBSCRIPTION_ID  AZURE_WEBAPP_NAME
+```
+
+The deploy job declares `environment: production`, so the federated
+credential's subject must be `repo:<owner>/<repo>:environment:production` and
+**not** `ref:refs/heads/main`. Getting that wrong is the usual cause of
+`AADSTS70021` on the sign-in step.
 
 Three things matter on App Service:
 
