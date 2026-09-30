@@ -232,8 +232,18 @@ UI だけでなく API 側でも強制されるガードレール:
 5. **ステータスを Live にして**リンクを共有します。大会が下書き状態のままでも審査員は
    採点できるので、リハーサルはこの状態で行います。
 6. **デモ会場のスクリーンで `/board/<slug>` を開き**、全画面ボタンを押します。
-7. **発表とエクスポート**（Results タブ）: リーダーボード CSV、審査員別内訳 CSV、
-   審査員フィードバック CSV、または完全な JSON スナップショット。
+7. **発表とエクスポート**（Results タブ）。5 種類あり、それぞれ別の問いに答えます。
+
+   | ファイル | 何が分かるか |
+   |---|---|
+   | `leaderboard.csv` | 誰が勝ったか。評価項目ごとの平均つき |
+   | `entries.csv` | 何が応募されたか — 説明・リポジトリ・録画デモ・応募者、エントリ順 |
+   | `per-judge.csv` | どの審査員がどの作品に何点を付けたか。コメントつき |
+   | `notes.csv` | フィードバックのみ |
+   | `full.json` | 全部。スクリプトで読む用 |
+
+   CSV 3 種は UTF-8 BOM 付きで Excel が CJK を正しく開き、先頭の `=` `+` `-` `@` を
+   無効化して数式インジェクションを防ぎます。
 
 審査員には 1 エントリずつ、評価項目ごとの数値入力欄、フィードバック欄、前後ナビ
 ゲーションが表示されます。スコアは入力しながら保存されます。**Mark as complete** で
@@ -520,7 +530,8 @@ GET    /api/competitions/:id/results            GET   /api/competitions/:id/live
 POST   /api/competitions/:id/entries/bulk       POST  /api/competitions/:id/judges/bulk
 POST   /api/competitions/:id/criteria/apply-template
 POST   /api/competitions/:id/judges/:jid/{rotate-link,reopen,reset-scores}
-GET    /api/competitions/:id/export/{leaderboard.csv,per-judge.csv,notes.csv,full.json}
+GET    /api/competitions/:id/export/{leaderboard.csv,entries.csv,per-judge.csv,
+                                     notes.csv,full.json}
 
 GET    /api/judge/:token                        PATCH /api/judge/:token/entries/:entryId
 POST   /api/judge/:token/{complete,reopen,locale}

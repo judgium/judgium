@@ -400,5 +400,6 @@
   "setup.enterUrl": "応募リンク",
   "setup.openEnterPage": "応募ページを開く",
   "setup.submissionsClosedNote": "締め切り済み。応募も編集もできません。応募リンクでは提出済みの内容のみ表示されます。",
-  "entries.submittedBy": "応募者：{name}"
+  "entries.submittedBy": "応募者：{name}",
+  "results.export.entries": "応募一覧 CSV"
 }

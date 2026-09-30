@@ -12,6 +12,14 @@ that says so at the top of its entry.
 ## [Unreleased]
 
 ### Added
+- **`entries.csv` export.** The roster as entered rather than as ranked: name,
+  team, track, table, who submitted it, the repository and recorded-demo URLs,
+  the description, and the scoring state, in the organizer's own entry order.
+  `leaderboard.csv` answers who won and deliberately carries none of it.
+- `full.json` entries now include `description` and `submittedBy`. Both existed
+  in the database and reached the judge scorecard, but no export carried them,
+  so a snapshot could not reconstruct what a participant actually submitted —
+  which is the whole of the entry when judging asynchronously.
 - Two more frames of the participant surface, so all three of its states are
   shown: opening the link (sign in or create an account) and the submission
   form, alongside the list of submissions that was already there. The

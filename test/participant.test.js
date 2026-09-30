@@ -192,6 +192,41 @@ test('a participant cannot invent a track or seat themselves at a table', async 
   assert.equal(entry.tableLabel, '');
 });
 
+test('an export carries the description and who submitted it', async () => {
+  const { org, id, slug } = await openCompetition('exported');
+  const { client } = await participant('helen', slug);
+  await client.post(`/api/enter/${slug}/entries`, {
+    name: 'Exported entry',
+    teamName: 'Team Export',
+    projectUrl: 'https://github.com/helen/project',
+    videoUrl: 'https://video.example/helen',
+    description: 'Recorded demo; judge asynchronously.',
+  });
+  await org.post(`/api/competitions/${id}/entries`, { name: 'Added by organizer' });
+
+  // The leaderboard CSV answers "who won" and carries none of this; the entry
+  // list is what an organizer hands round to check what was actually entered.
+  const csv = await org.get(`/api/competitions/${id}/export/entries.csv`);
+  assert.equal(csv.status, 200);
+  const rows = csv.body.split(/\r?\n/);
+  const submitted = rows.find((r) => r.startsWith('Exported entry,'));
+  const byOrganizer = rows.find((r) => r.startsWith('Added by organizer,'));
+
+  assert.ok(submitted.includes('helen'), 'names the submitter');
+  assert.ok(submitted.includes('https://github.com/helen/project'), 'carries the repository');
+  assert.ok(submitted.includes('https://video.example/helen'), 'carries the recorded demo');
+  assert.ok(submitted.includes('Recorded demo; judge asynchronously.'), 'carries the description');
+  assert.ok(byOrganizer.includes(',,,,'), 'an organizer-entered row names no submitter');
+
+  const full = await org.get(`/api/competitions/${id}/export/full.json`);
+  const mine = full.body.leaderboard.find((e) => e.name === 'Exported entry');
+  const theirs = full.body.leaderboard.find((e) => e.name === 'Added by organizer');
+  assert.equal(mine.submittedBy, 'helen');
+  assert.equal(mine.description, 'Recorded demo; judge asynchronously.');
+  assert.equal(theirs.submittedBy, null);
+  assert.equal(theirs.description, '');
+});
+
 test('the submission link is rejected when no competition has that slug', async () => {
   const res = await harness.client('slug-miss').get('/api/enter/no-such-competition');
   assert.equal(res.status, 404);

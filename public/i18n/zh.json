@@ -400,5 +400,6 @@
   "setup.enterUrl": "提交链接",
   "setup.openEnterPage": "打开提交页面",
   "setup.submissionsClosedNote": "已关闭。无法提交或修改，提交链接只显示参赛者已提交的内容。",
-  "entries.submittedBy": "提交者：{name}"
+  "entries.submittedBy": "提交者：{name}",
+  "results.export.entries": "作品清单 CSV"
 }

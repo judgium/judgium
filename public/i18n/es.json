@@ -400,5 +400,6 @@
   "setup.enterUrl": "Enlace de envío",
   "setup.openEnterPage": "Abrir la página de envío",
   "setup.submissionsClosedNote": "Cerrado. Nadie puede enviar ni editar, y el enlace muestra a los participantes lo que ya enviaron.",
-  "entries.submittedBy": "Enviado por {name}"
+  "entries.submittedBy": "Enviado por {name}",
+  "results.export.entries": "CSV de la lista de entradas"
 }

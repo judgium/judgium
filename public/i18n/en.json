@@ -400,5 +400,6 @@
   "setup.enterUrl": "Submission link",
   "setup.openEnterPage": "Open the submission page",
   "setup.submissionsClosedNote": "Closed. Nobody can submit or edit, and the submission link shows entrants what they already sent.",
-  "entries.submittedBy": "Submitted by {name}"
+  "entries.submittedBy": "Submitted by {name}",
+  "results.export.entries": "Entry list CSV"
 }

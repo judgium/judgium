@@ -400,5 +400,6 @@
   "setup.enterUrl": "제출 링크",
   "setup.openEnterPage": "제출 페이지 열기",
   "setup.submissionsClosedNote": "마감되었습니다. 제출과 수정이 불가능하며, 제출 링크에는 이미 보낸 내용만 표시됩니다.",
-  "entries.submittedBy": "제출자: {name}"
+  "entries.submittedBy": "제출자: {name}",
+  "results.export.entries": "작품 목록 CSV"
 }

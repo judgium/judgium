@@ -427,6 +427,14 @@ test('exports carry the per-judge breakdown and the feedback notes', async () =>
   assert.match(leaderboard.body, /Rank,Entry,Team,Track,Score/);
   assert.match(leaderboard.body, /Blackness \(avg \/10\)/);
 
+  const entries = await org.get(`/api/competitions/${id}/export/entries.csv`);
+  assert.equal(entries.status, 200);
+  assert.match(entries.headers.get('content-type'), /text\/csv/);
+  assert.match(entries.body, /Entry,Team,Track,Table,Submitted by,Project URL,Demo video URL,Description/);
+  // An organizer-created entry has no submitter, which the file shows as an
+  // empty column rather than by omitting the row.
+  assert.match(entries.body, /Project A,/);
+
   const perJudge = await org.get(`/api/competitions/${id}/export/per-judge.csv`);
   assert.match(perJudge.body, /Judge 1/);
   assert.match(perJudge.body, /Solid, but the demo crashed once\./);

@@ -67,6 +67,60 @@ export function leaderboardCsv(results) {
 }
 
 /** One row per judge x entry, with every criterion as a column, plus notes. */
+/**
+ * The entry roster as submitted, rather than as ranked.
+ *
+ * leaderboardCsv answers "who won"; this answers "what was entered" - the
+ * description and the two links a judge actually reads when reviewing
+ * asynchronously, plus who submitted it. Rows are in the organizer's own entry
+ * order so the file matches the Entries tab, with rank as a column rather than
+ * the sort key.
+ *
+ * `extras` maps entry id -> { description, submitter, sortOrder }; the
+ * leaderboard result does not carry those, and is deliberately not made to.
+ */
+export function entriesCsv(results, extras = new Map()) {
+  const headers = [
+    'Entry',
+    'Team',
+    'Track',
+    'Table',
+    'Submitted by',
+    'Project URL',
+    'Demo video URL',
+    'Description',
+    'Rank',
+    'Score',
+    'Max score',
+    'Judges scored',
+    'Judges eligible',
+  ];
+  const ordered = [...results.rows].sort(
+    (a, b) => (extras.get(a.id)?.sortOrder ?? 0) - (extras.get(b.id)?.sortOrder ?? 0),
+  );
+  const rows = ordered.map((r) => {
+    const extra = extras.get(r.id) || {};
+    return [
+      r.name,
+      r.teamName,
+      r.trackName,
+      r.tableLabel ?? '',
+      // Empty for an entry the organizer added themselves, which is how the
+      // two are told apart in the file as well as in the interface.
+      extra.submitter ?? '',
+      r.projectUrl ?? '',
+      r.videoUrl ?? '',
+      extra.description ?? '',
+      r.rank ?? '',
+      r.score ?? '',
+      r.maxScore ?? '',
+      r.judgesScored,
+      r.judgesEligible,
+    ];
+  });
+  return toCsv(headers, rows);
+}
+
 export function perJudgeCsv(results, notesByKey = new Map()) {
   const criteria = results.criteria;
   const headers = [

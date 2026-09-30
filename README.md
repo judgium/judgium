@@ -245,8 +245,19 @@ Guard rails, enforced by the API and not just the UI:
 5. **Set the status to Live** and share the links. Judges can also score while
    the competition is still a draft, which is how you rehearse.
 6. **Open `/board/<slug>` on the demo-room screen** and hit Full screen.
-7. **Announce and export** (Results tab): leaderboard CSV, per-judge breakdown
-   CSV, judge-feedback CSV, or a full JSON snapshot.
+7. **Announce and export** (Results tab). Five files, each answering a
+   different question:
+
+   | File | Answers |
+   |---|---|
+   | `leaderboard.csv` | Who won, with the per-criterion averages |
+   | `entries.csv` | What was entered — description, repository, recorded demo, who submitted it, in entry order |
+   | `per-judge.csv` | How each judge scored each entry, with their feedback |
+   | `notes.csv` | The feedback on its own |
+   | `full.json` | Everything, for a script to read |
+
+   The three CSVs carry a UTF-8 BOM so Excel opens CJK correctly, and neutralise
+   leading `=`, `+`, `-` and `@` against spreadsheet formula injection.
 
 Judges see one entry at a time with a numeric field per criterion, a feedback
 box, and prev/next navigation. Scores save as they type. **Mark as complete**
@@ -539,7 +550,8 @@ GET    /api/competitions/:id/results            GET   /api/competitions/:id/live
 POST   /api/competitions/:id/entries/bulk       POST  /api/competitions/:id/judges/bulk
 POST   /api/competitions/:id/criteria/apply-template
 POST   /api/competitions/:id/judges/:jid/{rotate-link,reopen,reset-scores}
-GET    /api/competitions/:id/export/{leaderboard.csv,per-judge.csv,notes.csv,full.json}
+GET    /api/competitions/:id/export/{leaderboard.csv,entries.csv,per-judge.csv,
+                                     notes.csv,full.json}
 
 GET    /api/judge/:token                        PATCH /api/judge/:token/entries/:entryId
 POST   /api/judge/:token/{complete,reopen,locale}

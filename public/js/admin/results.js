@@ -90,6 +90,7 @@ export function renderResultsTab(host, data, ctx) {
     'div',
     { class: 'row' },
     exportLink(c.id, 'leaderboard.csv', t('results.export.leaderboard')),
+    exportLink(c.id, 'entries.csv', t('results.export.entries')),
     exportLink(c.id, 'per-judge.csv', t('results.export.perJudge')),
     exportLink(c.id, 'notes.csv', t('results.export.notes')),
     exportLink(c.id, 'full.json', t('results.export.full')),
