@@ -56,7 +56,7 @@ confusing, and deletions.
 
 The codebase has strong conventions. Match them rather than your own habits:
 
-- **ES modules, Node ≥ 20.11, no TypeScript.** `.js` everywhere.
+- **ES modules, Node ≥ 22, no TypeScript.** `.js` everywhere.
 - **Two-space indent, single quotes, semicolons, trailing commas.** No linter is
   enforced in CI; read a neighbouring file and copy it.
 - **Comments explain *why*.** Look at the block comments at the top of

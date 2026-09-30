@@ -29,6 +29,19 @@ that says so at the top of its entry.
 
 ### Fixed
 
+- **Node 20 was never supported, despite `engines` saying so.** `better-sqlite3`
+  v13 declares `engines: >=22` and `jsdom` requires 22 or newer, and the
+  prebuilt binaries ship per platform rather than per ABI -- so Node 20 loaded a
+  binary built for a newer ABI and segfaulted instead of failing cleanly. Every
+  CI run since the first commit had a red Node 20 leg for this reason. The floor
+  is now `>=22.0.0` in `package.json`, the badge, both READMEs and
+  CONTRIBUTING, and the matrix tests 22 and 24.
+- **The OIDC federated credential never matched.** GitHub presents the subject
+  with numeric ids embedded --
+  `repo:judgium@334824344/judgium@1392026318:environment:production`, not
+  `repo:judgium/judgium:environment:production` -- so every deploy failed at
+  `azure/login` with `AADSTS700213`. Credentials for both forms now exist.
+
 - **`hidden` had no effect on styled elements.** The sign-out button on the
   submission page stayed visible to a signed-out visitor: the attribute was set,
   but `.btn { display: inline-flex }` outranks the user agent's

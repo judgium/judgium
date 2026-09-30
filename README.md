@@ -8,7 +8,7 @@
 [![CI](https://github.com/judgium/judgium/actions/workflows/ci.yml/badge.svg)](https://github.com/judgium/judgium/actions/workflows/ci.yml)
 [![Licence: AGPL-3.0](https://img.shields.io/badge/licence-AGPL--3.0--only-blue)](LICENSE)
 [![DCO](https://img.shields.io/badge/contributions-DCO-brightgreen)](DCO)
-[![Node](https://img.shields.io/badge/node-%E2%89%A520.11-026e00)](package.json)
+[![Node](https://img.shields.io/badge/node-%E2%89%A522-026e00)](package.json)
 
 Judgium is a judging platform that connects everything from hackathon project
 entry through judging to final tallying in one place. Entrants submit their own
@@ -18,7 +18,9 @@ projects, each judge is issued their own private link and scores every criterion
 
 Node.js + Express + SQLite. No build step, no framework runtime, two runtime
 dependencies (`express`, `better-sqlite3`) and one dev dependency (`jsdom`,
-for the page tests). Targets **Azure App Service (Linux, built-in Node runtime)** and
+for the page tests). Requires **Node 22 or newer** (`better-sqlite3` v13 declares it, and ships
+prebuilt binaries per platform rather than per ABI, so an older Node loads the
+wrong one). Targets **Azure App Service (Linux, built-in Node runtime)** and
 runs identically on a laptop.
 
 ---

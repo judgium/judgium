@@ -8,7 +8,7 @@
 [![CI](https://github.com/judgium/judgium/actions/workflows/ci.yml/badge.svg)](https://github.com/judgium/judgium/actions/workflows/ci.yml)
 [![Licence: AGPL-3.0](https://img.shields.io/badge/licence-AGPL--3.0--only-blue)](LICENSE)
 [![DCO](https://img.shields.io/badge/contributions-DCO-brightgreen)](DCO)
-[![Node](https://img.shields.io/badge/node-%E2%89%A520.11-026e00)](package.json)
+[![Node](https://img.shields.io/badge/node-%E2%89%A522-026e00)](package.json)
 
 Judgium は、ハッカソン作品の登録から審査、最終集計までを一つにつなぐジャッジング
 プラットフォームです。参加者は自分で作品を応募し、審査員はそれぞれ専用の非公開リンクで
@@ -19,6 +19,10 @@ Node.js + Express + SQLite。ビルドステップなし、フレームワーク
 実行時依存は 2 つ（`express`、`better-sqlite3`）、開発時依存は 1 つ（ページテスト用の
 `jsdom`）だけです。**Azure App Service（Linux、組み込み Node ランタイム）** を
 想定していますが、ノート PC 上でも同じように動きます。
+
+**Node 22 以降が必要です。** `better-sqlite3` v13 がそれを要求しており、かつ
+プリビルドバイナリが ABI 別ではなくプラットフォーム別のため、古い Node では
+別 ABI 向けのバイナリを読み込んでしまいます。
 
 ---
 

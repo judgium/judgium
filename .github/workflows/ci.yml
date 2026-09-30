@@ -23,8 +23,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 20.11 is the engines floor; 22 is what the deployment target runs.
-        node: ['20.11', '22']
+        # 22 is the engines floor and what the deployment target runs; 24 is the
+        # next LTS line, tested so an upgrade is not a surprise. Node 20 is not
+        # supported: better-sqlite3 v13 declares engines >=22 and ships its
+        # prebuilt binaries per platform rather than per ABI, so Node 20 loads a
+        # binary built for a newer ABI and segfaults rather than failing cleanly.
+        node: ['22', '24']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
