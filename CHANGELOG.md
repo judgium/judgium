@@ -12,6 +12,20 @@ that says so at the top of its entry.
 ## [Unreleased]
 
 ### Added
+- **`SECURITY.md` now states what a platform operator can reach.** The
+  guarantee that the public leaderboard carries no judge names or per-judge
+  scores was being read as a guarantee about the operator, which it is not. The
+  new section documents the boundary as measured: the API answers 404 to a
+  `superadmin` who does not own a competition, and the two routes round that are
+  resetting the owner's password (recorded as `user.password_reset` in the audit
+  log, and visible to the owner because their password stops working) and
+  reading the database file (not recorded at all, since the audit log is a table
+  inside it). Both READMEs point at it from the line that was being misread.
+- The operator checklist now says to treat `BACKUP_DIR` as judging data. Every
+  snapshot, manual or automatic, is a complete copy of the database — scores,
+  feedback, judge names and e-mails, **still-valid judge link tokens**, password
+  hashes. The pre-delete snapshots added in this release multiply those copies,
+  which is the cost of making a mis-clicked reset recoverable.
 - **Destructive operations snapshot the database first.** Scores and feedback
   are the one thing here nobody can retype, every delete was a plain `DELETE`
   with no soft-delete column, and the audit log covered only

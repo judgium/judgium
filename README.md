@@ -520,7 +520,12 @@ the data volume, and point `DATABASE_PATH` at persistent storage.
   formula injection.
 - Entry URLs must be `http(s)`; `javascript:` and `data:` are rejected.
 - The public leaderboard never carries judge names, per-judge scores or
-  feedback notes.
+  feedback notes. That is a guarantee about the **board**, not about the person
+  running the deployment: an operator can reach judging data, by resetting the
+  owner's password (recorded in the audit log) or by reading the database file
+  (not recorded at all). [`SECURITY.md`](SECURITY.md#what-a-platform-operator-can-reach)
+  states the boundary, and automatic pre-delete snapshots are full copies of the
+  same data.
 
 ## Project layout
 

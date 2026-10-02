@@ -147,6 +147,55 @@ real break rather than a deliberate trade-off. All of this is in the README's
 - **Every administrative write is in the audit log,** which outlives the accounts
   it refers to. A privileged write that leaves no trace is a vulnerability.
 
+## What a platform operator can reach
+
+The privacy guarantee above is about the **public leaderboard**, not about the
+person running the deployment. Stated plainly, because a judge who was told
+their individual scores are not published deserves to know who can in fact see
+them.
+
+**Through the API, a platform administrator cannot read somebody else's
+competition.** `/api/competitions/:id` and every export answer `404` — not
+`403` — to any account that does not own the competition, the `superadmin` role
+included. `/sysadmin` shows that a competition exists and who owns it, and can
+close, reopen or delete it, but cannot open its rubric, entries, scores or
+exports.
+
+**There are two ways round that, and both are worth knowing about.**
+
+1. **Reset the owner's password and sign in as them.** A platform administrator
+   can do this (`/sysadmin` → Accounts → Reset password) and then has everything
+   the owner has, judge names and per-judge scores included. It is recorded:
+   `user.password_reset` lands in the audit log with the administrator's
+   address, the target account and the IP, and the audit log outlives the
+   accounts it refers to. The owner also discovers it, because their own
+   password no longer works. This is the intended escalation path — the trace is
+   the point.
+
+2. **Read the database file.** Anyone with filesystem access to
+   `DATABASE_PATH`, `BACKUP_DIR` or a `npm run backup` snapshot has every score,
+   every note, every judge name and e-mail, **every judge's still-valid link
+   token**, and every password hash. **This leaves no trace at all** — the audit
+   log is a table inside the same file.
+
+   Automatic pre-delete snapshots multiply this: each is a full copy of the
+   database at the moment before scores were destroyed, kept in
+   `<BACKUP_DIR>/pre-delete/` until retention rotates it out. They exist so a
+   mis-clicked reset is recoverable, and the cost is more copies of exactly the
+   data above. `AUTO_SNAPSHOT_KEEP` bounds how many; `AUTO_SNAPSHOT=0` stops
+   them being written at the price of irreversible deletes.
+
+**What follows from that.** Whoever controls the host is inside the trust
+boundary and no application-level rule changes it. If you host Judgium for other
+people, say so in whatever terms you give them: the operator can reach judging
+data, and only the password-reset route leaves evidence. If judges were promised
+confidentiality beyond "not on the public board", that promise is yours to keep,
+not the software's.
+
+Reports that a platform administrator can escalate **by any route that is not
+recorded in the audit log** are in scope and welcome — that is a real finding.
+Reports that root can read a SQLite file are not.
+
 ## For operators
 
 Before an event that matters, the short checklist:
@@ -158,9 +207,14 @@ Before an event that matters, the short checklist:
 3. **HTTPS only.** Judge tokens travel in the URL path.
 4. **`npm run backup` before the announcement.** `VACUUM INTO`, safe on a live
    instance with judges mid-scoring.
-5. **Close sign-up** (`DISABLE_SIGNUP=1` or `SIGNUP_ALLOWLIST`) on anything
+5. **Treat `BACKUP_DIR` as judging data.** Both the manual snapshots and the
+   automatic `pre-delete/` ones are complete copies of the database — scores,
+   feedback, judge names and e-mails, live judge link tokens, password hashes.
+   Give the directory the same protection as the database, and do not copy one
+   somewhere more public to look at it.
+6. **Close sign-up** (`DISABLE_SIGNUP=1` or `SIGNUP_ALLOWLIST`) on anything
    internet-facing that is not meant to be a public service.
-6. **Rotate a judge link** the moment one leaks. Instant, and it retires the old
+7. **Rotate a judge link** the moment one leaks. Instant, and it retires the old
    one.
 
 ## Advisories
