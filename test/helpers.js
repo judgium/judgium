@@ -61,6 +61,10 @@ export async function startTestServer() {
   return {
     base,
     client,
+    // The throwaway data directory. Tests that check automatic snapshots need
+    // it: BACKUP_DIR defaults to <data dir>/backups, so they land in here and
+    // are removed with everything else on close().
+    dir,
     async close() {
       hub.closeAll();
       await new Promise((resolve) => server.close(resolve));

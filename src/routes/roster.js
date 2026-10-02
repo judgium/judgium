@@ -5,6 +5,8 @@ import { badRequest, notFound } from '../lib/errors.js';
 import { judgeLink, wrap } from '../lib/http.js';
 import { newId, newJudgeToken } from '../lib/ids.js';
 import { templateCriteria } from '../lib/templates.js';
+import { audit } from '../lib/audit.js';
+import { snapshotBeforeLoss } from '../lib/safety.js';
 import { email as vEmail, num, oneOf, optionalUrl, str } from '../lib/validate.js';
 import { touchCompetition } from '../services/results.js';
 import { loadOwnedCompetition, nextSortOrder } from '../middleware/competition.js';
@@ -20,6 +22,34 @@ rosterRouter.use(requireOrganizer);
 rosterRouter.param('competitionId', (req, res, next) => loadOwnedCompetition(req, res, next));
 
 const now = () => new Date().toISOString();
+
+/**
+ * Snapshot and record an operation that may take scores with it.
+ *
+ * Each delete below reaches scores one way or another: a judge and an entry
+ * directly, a criterion directly, a track through the criteria scoped to it.
+ * None of them can be undone - there is no soft-delete column - so the
+ * snapshot is the undo. It is skipped when nothing has been scored yet, which
+ * keeps setting a competition up free of copies.
+ */
+function guardLoss(req, db, { action, scope, targetType, targetId, targetLabel }) {
+  const snapshot = snapshotBeforeLoss(db, {
+    competitionId: req.competition.id,
+    name: req.competition.name,
+    action,
+    scope,
+  });
+  audit(req, {
+    action,
+    targetType,
+    targetId,
+    targetLabel,
+    detail: snapshot
+      ? `snapshot ${snapshot.file} (${snapshot.risk.scores} scores, ${snapshot.risk.notes} notes)`
+      : 'nothing scored',
+  });
+  return snapshot;
+}
 
 /** Resolves a client-supplied trackId, rejecting ids from other competitions. */
 function resolveTrackId(db, competitionId, value, { allowNull = true } = {}) {
@@ -86,6 +116,13 @@ rosterRouter.delete(
     const db = getDb();
     const track = mustOwnChild(db, 'tracks', req.params.trackId, req.competition.id, 'Track');
     // Entries fall back to "no track"; track-scoped criteria cascade away.
+    guardLoss(req, db, {
+      action: 'track.delete',
+      scope: { trackId: track.id },
+      targetType: 'track',
+      targetId: track.id,
+      targetLabel: track.name,
+    });
     db.prepare('DELETE FROM tracks WHERE id = ?').run(track.id);
     touchCompetition(req.competition.id, { db });
     res.json({ ok: true });
@@ -165,6 +202,16 @@ rosterRouter.post(
     const replace = str(req.body?.mode, 'mode', { max: 20 }) === 'replace';
 
     const apply = db.transaction(() => {
+      // Replacing the rubric drops every criterion, and their scores with them.
+      if (replace) {
+        guardLoss(req, db, {
+          action: 'rubric.replace',
+          scope: {},
+          targetType: 'competition',
+          targetId: req.competition.id,
+          targetLabel: req.competition.name,
+        });
+      }
       if (replace) db.prepare('DELETE FROM criteria WHERE competition_id = ?').run(req.competition.id);
       let order = replace ? 0 : nextSortOrder(db, 'criteria', req.competition.id);
       const insert = db.prepare(
@@ -216,6 +263,13 @@ rosterRouter.delete(
   wrap((req, res) => {
     const db = getDb();
     const existing = mustOwnChild(db, 'criteria', req.params.criterionId, req.competition.id, 'Criterion');
+    guardLoss(req, db, {
+      action: 'criterion.delete',
+      scope: { criterionId: existing.id },
+      targetType: 'criterion',
+      targetId: existing.id,
+      targetLabel: existing.name,
+    });
     db.prepare('DELETE FROM criteria WHERE id = ?').run(existing.id);
     touchCompetition(req.competition.id, { db });
     res.json({ ok: true });
@@ -385,6 +439,13 @@ rosterRouter.delete(
   wrap((req, res) => {
     const db = getDb();
     const existing = mustOwnChild(db, 'entries', req.params.entryId, req.competition.id, 'Entry');
+    guardLoss(req, db, {
+      action: 'entry.delete',
+      scope: { entryId: existing.id },
+      targetType: 'entry',
+      targetId: existing.id,
+      targetLabel: existing.name,
+    });
     db.prepare('DELETE FROM entries WHERE id = ?').run(existing.id);
     touchCompetition(req.competition.id, { db });
     res.json({ ok: true });
@@ -536,6 +597,13 @@ rosterRouter.delete(
   wrap((req, res) => {
     const db = getDb();
     const existing = mustOwnChild(db, 'judges', req.params.judgeId, req.competition.id, 'Judge');
+    guardLoss(req, db, {
+      action: 'judge.delete',
+      scope: { judgeId: existing.id },
+      targetType: 'judge',
+      targetId: existing.id,
+      targetLabel: existing.name,
+    });
     db.prepare('DELETE FROM judges WHERE id = ?').run(existing.id);
     touchCompetition(req.competition.id, { db });
     res.json({ ok: true });
@@ -572,6 +640,13 @@ rosterRouter.post(
   wrap((req, res) => {
     const db = getDb();
     const existing = mustOwnChild(db, 'judges', req.params.judgeId, req.competition.id, 'Judge');
+    guardLoss(req, db, {
+      action: 'judge.reset_scores',
+      scope: { judgeId: existing.id },
+      targetType: 'judge',
+      targetId: existing.id,
+      targetLabel: existing.name,
+    });
     const run = db.transaction(() => {
       db.prepare('DELETE FROM scores WHERE judge_id = ?').run(existing.id);
       db.prepare('DELETE FROM notes WHERE judge_id = ?').run(existing.id);

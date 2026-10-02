@@ -175,6 +175,33 @@ npm run backup -- /tmp/out.db  # 出力先を指定する場合
 いないのにデータが消えたように見えます。起動ログと `/sysadmin` の概要画面の両方に、
 3 つのうちどれが有効かが表示されます。
 
+**破壊的操作は先にスナップショットを取ります。** スコアとフィードバックは、この
+データベースの中で誰も再入力できない唯一のものです。審査員団の判断であり、たいてい
+4 分のデモ中に一度だけ収集されます。削除はすべてソフト削除列を持たない素の
+`DELETE` なので、スコアやコメントの行を削除する操作の直前に
+`<BACKUP_DIR>/pre-delete/` へスナップショットを書き、何がどれだけ失われるところ
+だったかを監査ログに記録します。
+
+```
+competition.reset_scores  competition  Spring Hackathon 2026
+    snapshot Spring_Hackathon_2026-reset-scores-2026-10-02T07-05-20.db (180 scores, 9 notes)
+entry.delete              entry        Aurora
+    snapshot Spring_Hackathon_2026-entry.delete-2026-10-02T07-05-20.db (18 scores, 3 notes)
+track.delete              track        Throwaway
+    nothing scored
+```
+
+何も失わない操作ではスナップショットを取らないので、コンテストの準備中にコピーが
+増えることはありません。**トラックの削除では取ります** — `criteria.track_id` が
+カスケードするため、トラックはそのトラック固有の評価項目とスコアを連れて消えます。
+スナップショットが必要なのに書き込めない場合、操作は**黙って実行されず失敗します**。
+不可逆な削除を受け入れるなら `AUTO_SNAPSHOT=0` です。保持件数は
+`AUTO_SNAPSHOT_KEEP`（既定 10）で、手動の `npm run backup` は一つ上の
+ディレクトリにあり削除対象外です。
+
+復元は手動バックアップと同じで、サーバーを停止して `judgium.db` に上書きコピー
+します。
+
 **スキーマ変更。** `src/db/schema.sql` は新規データベース用のベースラインで、
 すべて `CREATE ... IF NOT EXISTS` なので、既存のテーブルを変更することはできません。
 既存テーブルに手を入れる変更は `src/db/migrations.js` に記述します。これは起動時に

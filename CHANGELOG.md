@@ -12,6 +12,24 @@ that says so at the top of its entry.
 ## [Unreleased]
 
 ### Added
+- **Destructive operations snapshot the database first.** Scores and feedback
+  are the one thing here nobody can retype, every delete was a plain `DELETE`
+  with no soft-delete column, and the audit log covered only
+  platform-administrator writes — so a mis-clicked "clear all scores" mid-event
+  destroyed a panel's work with no copy and no trace. Both halves are fixed:
+  - A snapshot goes to `<BACKUP_DIR>/pre-delete/` before clearing scores,
+    deleting a competition, entry, judge, criterion or track, or replacing a
+    rubric. It is skipped when the operation would lose nothing, so setting a
+    competition up costs no copies.
+  - **Deleting a track takes one too.** `criteria.track_id` cascades, so a track
+    silently took its track-scoped criteria and their scores with it — the least
+    obvious of the six paths into `scores`.
+  - If a snapshot is called for and cannot be written, the operation fails
+    rather than destroying the scores quietly. `AUTO_SNAPSHOT=0` accepts
+    irreversible deletes; `AUTO_SNAPSHOT_KEEP` (default 10) bounds retention,
+    since these are full copies of the database on the same volume.
+  - **Organizer destructive operations now reach the audit log**, with the
+    snapshot filename and the number of scores and notes that were at stake.
 - **`entries.csv` export.** The roster as entered rather than as ranked: name,
   team, track, table, who submitted it, the repository and recorded-demo URLs,
   the description, and the scoring state, in the organizer's own entry order.

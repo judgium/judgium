@@ -94,6 +94,18 @@ export const config = {
   // project, which is only correct for an unmodified build.
   sourceUrl: (process.env.SOURCE_URL || 'https://github.com/judgium/judgium').replace(/\/+$/, ''),
 
+  // Before an operation removes score or note rows, write a snapshot beside the
+  // database. Scores are the one thing here that cannot be re-entered, every
+  // delete is immediate, and there is no soft-delete column to undo one.
+  //
+  // Set AUTO_SNAPSHOT=0 to accept irreversible deletes - on a deployment whose
+  // backup directory is read-only, that is the alternative to the destructive
+  // operations failing outright.
+  autoSnapshot: bool('AUTO_SNAPSHOT', true),
+  // How many automatic snapshots to keep. They are full copies of the database,
+  // on the same volume as the database, so they cannot accumulate unbounded.
+  autoSnapshotKeep: Math.max(1, Math.round(num('AUTO_SNAPSHOT_KEEP', 10))),
+
   disableSignup: bool('DISABLE_SIGNUP', false),
   signupAllowlist: (process.env.SIGNUP_ALLOWLIST || '')
     .split(',')

@@ -3,6 +3,8 @@ import { getDb } from '../db/index.js';
 import { badRequest, conflict } from '../lib/errors.js';
 import { hub } from '../lib/events.js';
 import { boardLink, enterLink, judgeLink, noStore, wrap } from '../lib/http.js';
+import { audit } from '../lib/audit.js';
+import { snapshotBeforeLoss } from '../lib/safety.js';
 import { newId, slugify } from '../lib/ids.js';
 import { templateCriteria } from '../lib/templates.js';
 import { bool, oneOf, str } from '../lib/validate.js';
@@ -276,6 +278,19 @@ competitionsRouter.delete(
   '/:competitionId',
   loadOwnedCompetition,
   wrap((req, res) => {
+    // Everything cascades from here, scores included, so snapshot first.
+    const snapshot = snapshotBeforeLoss(getDb(), {
+      competitionId: req.competition.id,
+      name: req.competition.name,
+      action: 'delete-competition',
+    });
+    audit(req, {
+      action: 'competition.delete',
+      targetType: 'competition',
+      targetId: req.competition.id,
+      targetLabel: req.competition.name,
+      detail: snapshot ? `snapshot ${snapshot.file} (${snapshot.risk.scores} scores, ${snapshot.risk.notes} notes)` : 'nothing scored',
+    });
     // ON DELETE CASCADE clears tracks, criteria, entries, judges, scores, notes.
     getDb().prepare('DELETE FROM competitions WHERE id = ?').run(req.competition.id);
     dropCache(req.competition.id);
@@ -322,6 +337,21 @@ competitionsRouter.post(
   wrap((req, res) => {
     const db = getDb();
     const id = req.competition.id;
+    // The one operation whose whole purpose is to destroy judgement. A dry run
+    // and the real event look identical from here, so take the snapshot before
+    // finding out which it was.
+    const snapshot = snapshotBeforeLoss(db, {
+      competitionId: id,
+      name: req.competition.name,
+      action: 'reset-scores',
+    });
+    audit(req, {
+      action: 'competition.reset_scores',
+      targetType: 'competition',
+      targetId: id,
+      targetLabel: req.competition.name,
+      detail: snapshot ? `snapshot ${snapshot.file} (${snapshot.risk.scores} scores, ${snapshot.risk.notes} notes)` : 'nothing scored',
+    });
     const reset = db.transaction(() => {
       db.prepare('DELETE FROM scores WHERE entry_id IN (SELECT id FROM entries WHERE competition_id = ?)').run(id);
       db.prepare('DELETE FROM notes  WHERE entry_id IN (SELECT id FROM entries WHERE competition_id = ?)').run(id);

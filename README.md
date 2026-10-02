@@ -182,6 +182,33 @@ third signs everyone out on every restart, which looks like data loss even
 though the accounts and competitions are untouched. The boot log and the
 `/sysadmin` overview both state which of the three is in effect.
 
+**Destructive operations snapshot first.** Scores and feedback are the one thing
+in the database nobody can retype: they are a panel's judgement, usually
+collected once during a four-minute demo. Every delete is a plain `DELETE` with
+no soft-delete column, so before an operation removes score or note rows the
+server writes a snapshot into `<BACKUP_DIR>/pre-delete/` and records the
+operation in the audit log with how much was at stake:
+
+```
+competition.reset_scores  competition  Spring Hackathon 2026
+    snapshot Spring_Hackathon_2026-reset-scores-2026-10-02T07-05-20.db (180 scores, 9 notes)
+entry.delete              entry        Aurora
+    snapshot Spring_Hackathon_2026-entry.delete-2026-10-02T07-05-20.db (18 scores, 3 notes)
+track.delete              track        Throwaway
+    nothing scored
+```
+
+Operations that would lose nothing take no snapshot, so setting a competition up
+costs no copies. Deleting a **track** does take one: `criteria.track_id`
+cascades, so a track takes its criteria and their scores with it. If a snapshot
+is called for and cannot be written the operation fails rather than destroying
+the scores quietly — `AUTO_SNAPSHOT=0` accepts irreversible deletes instead.
+`AUTO_SNAPSHOT_KEEP` (default 10) bounds how many are kept; the manual
+`npm run backup` output lives one directory up and is never pruned.
+
+To restore one, stop the server and copy it over `judgium.db` exactly as for a
+manual backup.
+
 **Schema changes.** `src/db/schema.sql` is the baseline for a fresh database and
 is all `CREATE ... IF NOT EXISTS`, so it cannot alter a table that already
 exists. Anything that changes an existing table goes in `src/db/migrations.js`,
